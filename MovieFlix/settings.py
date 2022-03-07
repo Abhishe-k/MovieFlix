@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,7 +55,7 @@ ROOT_URLCONF = 'MovieFlix.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [os.path.join(BASE_DIR,'Core/templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -76,10 +76,18 @@ WSGI_APPLICATION = 'MovieFlix.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+                'ENGINE': 'djongo',
+                'NAME': 'MovieFlix',
+                'ENFORCE_SCHEMA': False,
+                'CLIENT': {
+                    'host': 'mongodb+srv://movieflix:movieflix%401234@cluster0.fm15x.mongodb.net/MovieFlix?retryWrites=true&w=majority'
+                }
+            }
 }
 
 
