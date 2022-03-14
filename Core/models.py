@@ -28,19 +28,20 @@ from django.contrib.auth.models import (
 #         user.is_staff = True
 #         user.save()
 #         return user
-class UserProfile(models.Model):
-    username = models.CharField(max_length=10,unique=True)
-    first_name = models.CharField(max_length=50, null=True, blank=True)
-    last_name = models.CharField(max_length=50, null=True, blank=True)
-    password = models.CharField(max_length=10, null=True)
-    email = models.EmailField(unique=True, null=True)
 
+# class UserProfile(models.Model):
+#     username = models.CharField(max_length=10,unique=True)
+#     first_name = models.CharField(max_length=50, null=True, blank=True)
+#     last_name = models.CharField(max_length=50, null=True, blank=True)
+#     password = models.CharField(max_length=10, null=True)
+#     email = models.EmailField(unique=True, null=True)
+#
     # USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['username']
-    # objects = UserManager()
-
-    def __str__(self):
-        return self.email
+#     # objects = UserManager()
+#
+    # def __str__(self):
+    #     return self.email
 
 
 

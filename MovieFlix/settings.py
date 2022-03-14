@@ -76,18 +76,18 @@ WSGI_APPLICATION = 'MovieFlix.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     'default': {
-                'ENGINE': 'djongo',
-                'NAME': 'MovieFlix',
-                'ENFORCE_SCHEMA': False,
-                'CLIENT': {
-                    'host': 'mongodb+srv://movieflix:movieflix%401234@cluster0.fm15x.mongodb.net/MovieFlix?retryWrites=true&w=majority'
-                }
-            }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+    # 'default': {
+    #             'ENGINE': 'djongo',
+    #             'NAME': 'MovieFlix',
+    #             'ENFORCE_SCHEMA': False,
+    #             'CLIENT': {
+    #                 'host': 'mongodb+srv://movieflix:movieflix%401234@cluster0.fm15x.mongodb.net/MovieFlix?retryWrites=true&w=majority'
+    #             }
+    #         }
 }
 
 

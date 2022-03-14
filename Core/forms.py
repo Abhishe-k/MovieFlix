@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+
+
 class SignUpForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput(), max_length=30, required=True)
     email = forms.CharField(widget=forms.EmailInput(), max_length=100, required=True)
@@ -10,14 +12,10 @@ class SignUpForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password')
+        fields = ['username', 'email', 'first_name', 'last_name', 'password']
 
     def _init_(self, *args, **kwargs):
         super(SignUpForm, self)._init_(*args, **kwargs)
-        # self.fields['username'].validators.append(ForbiddenUsers)
-        # self.fields['username'].validators.append(InvalidUser)
-        # self.fields['username'].validators.append(UniqueUser)
-        # self.fields['email'].validators.append(UniqueEmail)
 
     def clean(self):
         super(SignUpForm, self).clean()
@@ -28,20 +26,18 @@ class SignUpForm(forms.ModelForm):
             self._errors['password'] = self.error_class(['Password do not match, try again!'])
 
         return self.cleaned_data
-class SignInForm(forms.ModelForm):
-    email = forms.CharField(widget=forms.EmailInput(), max_length=100, required=True)
+
+
+class SignInForm(forms.Form):
+    username = forms.CharField(required=True)
     password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = User
-        fields = ( 'email', 'password')
+        fields = ['username', 'password']
 
     def _init_(self, *args, **kwargs):
         super(SignInForm, self)._init_(*args, **kwargs)
-        # self.fields['username'].validators.append(ForbiddenUsers)
-        # self.fields['username'].validators.append(InvalidUser)
-        # self.fields['username'].validators.append(UniqueUser)
-        # self.fields['email'].validators.append(UniqueEmail)
 
     def clean(self):
         super(SignInForm, self).clean()
