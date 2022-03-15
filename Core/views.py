@@ -66,8 +66,7 @@ def home(request):
             'username': request.session['username']
         }
         return render(request, 'home.html', context)
-
-    return HttpResponse("Not Logged In")
+    return render(request,'home.html')
 
 
 def logout(request):
