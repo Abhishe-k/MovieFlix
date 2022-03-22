@@ -73,3 +73,24 @@ def logout(request):
     del request.session['username']
     return redirect('/home')
 
+def movies(request):
+    if 'username' in request.session.keys():
+        context = {
+            'username': request.session['username']
+        }
+        return render(request, 'movies.html', context)
+    return render(request,'movies.html')
+def movie(request, movie_id):
+        movie_by_id=  str(5)
+        # items = Item.objects.filter(type_id=type_no)
+        if 'username' in request.session.keys():
+            context = {
+                'username': request.session['username'],
+                "id": 5, "name": 'Uncharted', "plot": "An adventure film"
+            }
+            return render(request, 'movie.html', context)
+        response = HttpResponse()
+        return render(request, 'movie.html', {"id": 5, "name": 'Uncharted', "plot": "An adventure film"})
+        # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
+        # response.write(para)
+        # return response
