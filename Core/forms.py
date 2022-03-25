@@ -44,3 +44,4 @@ class SignInForm(forms.Form):
         password = self.cleaned_data.get('password')
 
         return self.cleaned_data
+

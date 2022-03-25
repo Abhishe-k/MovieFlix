@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .forms import SignUpForm, SignInForm
 from movie.models import movie
-
+from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
 
@@ -76,13 +76,16 @@ def logout(request):
 def movies(request):
     allmovies = movie.objects.all()
     print(allmovies)
+    if request.method == 'POST':
+        searchmovie = request.POST["searchmovie"]
+        allmovies = movie.objects.filter(title__contains=searchmovie)
     if 'username' in request.session.keys():
         context = {
             'username': request.session['username'],
             'movies':allmovies
         }
         return render(request, 'movies.html', context)
-    return render(request,'movies.html',{'movies':allmovies})
+    return render(request,'movies.html',{'movies':list(allmovies)})
 def movieDetail(request, movie_id):
         movie_by_id=  movie.objects.filter(id=format(movie_id,'07'))
         print(movie_by_id)
