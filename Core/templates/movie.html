@@ -35,11 +35,11 @@
 <div class="container">
     <div class="row" style="margin: 2%">
         <div class="col-6">
-            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.vkFuXerA8bNLRNnoD-IQ7wHaFj%26pid%3DApi&f=1" width="100%" height="90%" alt="Uncharted">
+            <img src={{ movieData.imageUrl }} width="100%" height="90%" alt={{ movieData.title }}>
         </div>
         <div class="col-6" style="text-align: center">
-            <h2>{{ name }}</h2>
-            <p>{{ plot }}</p>
+            <h2>{{ movieData.title }}</h2>
+            <p>{{ movieData.plot }}</p>
         </div>
     </div>
 </div>

@@ -33,15 +33,18 @@
 {#  </header>#}
 <main>
    <div class="row row-cols-1 row-cols-md-6 g-4" style="margin: 30px 5% 30px 5%">
-  <div class="col">
-    <div class="card h-100">
-      <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.vkFuXerA8bNLRNnoD-IQ7wHaFj%26pid%3DApi&f=1" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title"><a href="/movie/{{ 5 }}">Uncharted</a></h5>
-        <p class="card-text"></p>
-      </div>
-    </div>
-  </div>
+       {% for m in movies %}
+           <div class="col">
+            <div class="card h-100">
+              <img src={{ m.imageUrl }} class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title"><a href="/movie/{{ m.id }}">{{ m.title }}</a></h5>
+                <p class="card-text"></p>
+              </div>
+            </div>
+          </div>
+       {% endfor %}
+
   <div class="col">
     <div class="card h-100">
       <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.vkFuXerA8bNLRNnoD-IQ7wHaFj%26pid%3DApi&f=1" class="card-img-top" alt="...">

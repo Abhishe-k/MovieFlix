@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .forms import SignUpForm, SignInForm
-
+from movie.models import movie
 
 # Create your views here.
 from django.contrib.auth.models import User
@@ -74,23 +74,30 @@ def logout(request):
     return redirect('/home')
 
 def movies(request):
+    allmovies = movie.objects.all()
+    print(allmovies)
     if 'username' in request.session.keys():
         context = {
-            'username': request.session['username']
+            'username': request.session['username'],
+            'movies':allmovies
         }
         return render(request, 'movies.html', context)
-    return render(request,'movies.html')
-def movie(request, movie_id):
-        movie_by_id=  str(5)
+    return render(request,'movies.html',{'movies':allmovies})
+def movieDetail(request, movie_id):
+        movie_by_id=  movie.objects.filter(id=format(movie_id,'07'))
+        print(movie_by_id)
+        temp = None
+        for m in movie_by_id:
+            temp = m
         # items = Item.objects.filter(type_id=type_no)
         if 'username' in request.session.keys():
             context = {
                 'username': request.session['username'],
-                "id": 5, "name": 'Uncharted', "plot": "An adventure film"
+                'movieData':temp
             }
             return render(request, 'movie.html', context)
         response = HttpResponse()
-        return render(request, 'movie.html', {"id": 5, "name": 'Uncharted', "plot": "An adventure film"})
+        return render(request, 'movie.html', {'movieData':temp})
         # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
         # response.write(para)
         # return response
