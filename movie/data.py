@@ -51,7 +51,6 @@ class Data:
         print(temp)
 
 
-
     def get_movies(self, top):
         temp = None
         ia = imdb.IMDb()
