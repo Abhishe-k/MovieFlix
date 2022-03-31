@@ -1,6 +1,7 @@
-from .models import movie, actor
+from .models import movie, actor, topmovie
 import imdb
 NO_OF_MOVIES = 1000
+
 
 class Data:
 
@@ -20,6 +21,8 @@ class Data:
         temp = None
 
         if 'cast' in m.keys():
+            print(m['cast'])
+
             if len(m['cast']) >= 3:
                 print("1st")
                 actor1 = m['cast'][0].personID
@@ -49,20 +52,33 @@ class Data:
 
 
 
+    def get_movies(self, top):
+        temp = None
+        ia = imdb.IMDb()
 
-    def get_movies(self):
-        for i in range(1, 50):
-            ia = imdb.IMDb()
-            m = ia.get_movie(format(i, '07'))
-            self.load_actors(m, format(i, '07'))
+        rnge = 100
+        if top:
+            temp = ia.get_top250_movies()
+            rnge = 250
+
+        print(rnge)
+        for i in range(1, rnge + 1):
+            if top:
+                m = ia.get_movie(temp[i - 1].movieID)
+                print(i, temp[i - 1].movieID)
+                # self.load_actors(m, temp[0].movieID)
+            else:
+                m = ia.get_movie(format(i, '07'))
+                # self.load_actors(m, format(i, '07'))
+
             # print(m.keys())
             if 'title' in m.keys():
                 title = m['title']
             else:
                 title = ''
 
-            if 'cover url' in m.keys():
-                imageUrl = m['cover url']
+            if 'full-size cover url' in m.keys():
+                imageUrl = m['full-size cover url']
             else:
                 imageUrl = ''
 
@@ -113,7 +129,17 @@ class Data:
             else:
                 year = 1600
 
-            self.movies.append({'id': format(i, '07'),
+            if 'cast' in m.keys():
+                cast = m['cast']
+            else:
+                cast = ''
+
+            if top:
+                id = temp[i - 1].movieID
+            else:
+                id = format(i, '07')
+
+            self.movies.append({'id': id,
                            'title': title,
                            'imageUrl': imageUrl,
                            'director': director,
@@ -124,8 +150,10 @@ class Data:
                            'rating': rating,
                            'votes': votes,
                            'runtime': runtime,
-                           'year': year})
+                           'year': year,
+                            'cast': cast})
 
+            print(self.movies[i - 1])
             # print({'id': format(i, '07'),
             #                'title': title,
             #                'imageUrl': imageUrl,
@@ -139,22 +167,45 @@ class Data:
             #                'runtime': runtime,
             #                'year': year})
 
-        # for m in self.movies:
-        #     if not movie.objects.filter(id=m['id']):
-        #         temp = movie(m['id'], m['title'], m['imageUrl'], m['director'], m['releaseDate'], m['genre1'],
-        #                      m['genre2'], m['plot'], m['rating'], m['votes'], m['runtime'], m['year'])
-        #         temp.save()
-        #         print('Saved.')
+        rank = 1
+        for m in self.movies:
+
+            if top:
+                mv = list(movie.objects.filter(id=m['id']))
+                print(mv[0])
+
+                temp = topmovie(topId=mv[0], rank=rank)
+                temp.save()
+                rank += 1
 
 
 
+            if not movie.objects.filter(id=m['id']):
+                print('Adding to database', m['id'])
+
+                temp = movie(m['id'], m['title'], m['imageUrl'], m['director'], m['releaseDate'], m['genre1'],
+                             m['genre2'], m['plot'], m['rating'], m['votes'], m['runtime'], m['year'])
+                temp.save()
+
+                print('Saved.')
 
 
+            # self.load_actors(m, m['id'])
 
+        if top:
+            return self.movies
 
+    def update_image(self):
 
+        mvs = list(movie.objects.all())
+        ia = imdb.IMDb()
 
+        for m in mvs:
+            temp_movie = ia.get_movie(str(m.id))
 
+            if 'full-size cover url' in temp_movie.keys():
+                m.imageUrl = temp_movie['full-size cover url']
+            else:
+                m.imageUrl = ''
 
-
-
+            m.save()

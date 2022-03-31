@@ -30,21 +30,24 @@ import imdb
 def movies(request):
     d = Data()
 
-    d.get_movies()
+    d.get_movies(False)
 
     return HttpResponse('Movies are saved to database.')
 
 def top_250(request):
-    ia = imdb.IMDb()
 
-    top = ia.get_top250_movies()
+    d = Data()
 
+    top250 = d.get_movies(True)
 
-#
-#
-# def genres(request):
-#     g = Genre()
-#
-#     g.get_genres()
-#
-#     return HttpResponse('genres were added to movies.')
+    # print(top250)
+    print(len(top250))
+
+    return render(request, 'home.html', {'top250': top250})
+
+def update_image(request):
+    d = Data()
+
+    d.update_image()
+
+    return HttpResponse('All images are updated.')
