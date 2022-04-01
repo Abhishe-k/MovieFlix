@@ -1,0 +1,5 @@
+{%  load static %}
+{% if img_obj %}
+  <h3>Succesfully uploaded: display</h3>
+  <img src="http://127.0.0.1:8000/movies{{ img_obj.url }}" style="max-height:300px">
+{% endif %}

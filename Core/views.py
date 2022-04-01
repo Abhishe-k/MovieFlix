@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+
+from movie.forms import OrderForm
 from .forms import SignUpForm, SignInForm
 from movie.models import movie
 from django.core import serializers
@@ -61,12 +63,14 @@ def loginUser(request):
 
 
 def home(request):
+    form = OrderForm()
     if 'username' in request.session.keys():
         context = {
-            'username': request.session['username']
+            'username': request.session['username'],
+            'form': form
         }
         return render(request, 'home.html', context)
-    return render(request,'home.html')
+    return render(request, 'home.html')
 
 
 def logout(request):
