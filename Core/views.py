@@ -69,15 +69,16 @@ def loginUser(request):
 def home(request):
     form = OrderForm()
     topTen = topmovie.objects.filter()[:11]
-
+    topTwenty = topmovie.objects.filter()[12:32]
+    context = {
+        'topTen': topTen,
+        'topTwenty':topTwenty
+    }
     if 'username' in request.session.keys():
-        context = {
-            'username': request.session['username'],
-            'form': form,
-            'topTen':topTen
-        }
+        context['username'] = request.session['username']
+        context['form'] = form
         return render(request, 'home.html', context)
-    return render(request, 'home.html')
+    return render(request, 'home.html',context)
 
 
 def logout(request):
