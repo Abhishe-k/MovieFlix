@@ -54,9 +54,5 @@ def view_image(request):
                                                      'media_url': settings.MEDIA_URL})
 
 
-def order_movie(request):
-    if request.POST:
-        obj = order(username=request.session['username'], title=request.POST['title'])
-        obj.save()
-        return render(request, 'base.html', {'msg': 'Order placed successfully for ' + request.POST['title']})
+
 

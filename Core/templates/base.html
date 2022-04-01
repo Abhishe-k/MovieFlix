@@ -25,8 +25,22 @@
         </form>
 
         {% if username  %}
-            <a href="/profile">{{ username }}</a> &nbsp;&nbsp;
-            <a href="/logout">Logout</a>
+
+            {{ username }} &nbsp;&nbsp;
+            <div class="dropdown text-end">
+          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="" alt="mdo" width="32" height="32" class="rounded-circle">
+          </a>
+          <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li><button type="button" class="dropdown-item btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      Order Movie
+                    </button>
+              </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </div>
         {% else %}
              <div class="text-end">
               <button type="button" class="btn btn-outline-light me-2"><a href="/signin" style="color: gold">Sign-In</a></button>

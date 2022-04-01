@@ -9,4 +9,5 @@ class ImageForm(forms.ModelForm):
 
 
 class OrderForm(forms.Form):
-    title = forms.CharField(max_length=100)
+    title = forms.CharField(max_length=100, label="Title")
+
