@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
-from movie.forms import OrderForm
+from movie.forms import OrderForm, ImageForm
 from .forms import SignUpForm, SignInForm
-from movie.models import movie
+from movie.models import movie, profile
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
@@ -77,6 +77,7 @@ def logout(request):
     del request.session['username']
     return redirect('/home')
 
+
 def movies(request):
     allmovies = movie.objects.all()
     print(allmovies)
@@ -86,10 +87,12 @@ def movies(request):
     if 'username' in request.session.keys():
         context = {
             'username': request.session['username'],
-            'movies':allmovies
+            'movies': allmovies
         }
         return render(request, 'movies.html', context)
-    return render(request,'movies.html',{'movies':list(allmovies)})
+    return render(request, 'movies.html', {'movies':list(allmovies)})
+
+
 def movieDetail(request, movie_id):
         movie_by_id=  movie.objects.filter(id=format(movie_id,'07'))
         print(movie_by_id)
@@ -108,3 +111,36 @@ def movieDetail(request, movie_id):
         # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
         # response.write(para)
         # return response
+
+
+def profile_user(request):
+    if 'username' not in request.session.keys():
+        print('usad')
+        return redirect('/signin')
+
+    user = User.objects.get(username=request.session['username'])
+
+    # usr_img = profile.objects.get(username=request.session['username'])
+    context = {'user': user, 'username': request.session['username']}
+
+    try:
+        usr_img = profile.objects.get(username=request.session['username'])
+        context['img'] = usr_img.image
+    except:
+        context['form'] = ImageForm()
+
+    return render(request, 'profile.html', context)
+
+
+def image_upload(request):
+    if request.POST:
+        form = ImageForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            obj = profile(username=request.session['username'],
+                          image=request.FILES['image'])
+            obj.save()
+            img_obj = request.FILES['image']
+            print("HERE")
+            return redirect('/profile')
+

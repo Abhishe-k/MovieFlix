@@ -25,7 +25,8 @@
         </form>
 
         {% if username  %}
-            {{ username }} &nbsp;&nbsp; <a href="/logout">Logout</a>
+            <a href="/profile">{{ username }}</a> &nbsp;&nbsp;
+            <a href="/logout">Logout</a>
         {% else %}
              <div class="text-end">
               <button type="button" class="btn btn-outline-light me-2"><a href="/signin" style="color: gold">Sign-In</a></button>

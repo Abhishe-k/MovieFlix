@@ -39,10 +39,10 @@ def image_upload(request):
                           image=request.FILES['image'])
             obj.save()
             img_obj = request.FILES['image']
-
+            print("HERE")
             return render(request, 'image.html', {'img_obj': img_obj})
     else:
-        form = ImageForm(initial={'username': request.session['username']})
+        form = ImageForm()
 
     return render(request, 'image.html', {'form': form})
 
