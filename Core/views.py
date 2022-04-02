@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
-from movie.forms import OrderForm, ImageForm
+from movie.forms import OrderForm, ImageForm, CommentForm
 from .forms import SignUpForm, SignInForm
-from movie.models import movie, actor, order, topmovie, profile
+from movie.models import movie, actor, order, topmovie, profile, Comment
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
@@ -161,11 +161,11 @@ def movies(request):
         return render(request, 'movies.html', context)
     return render(request, 'movies.html', context)
 def movieDetail(request, movie_id):
-        movie_by_id=  movie.objects.filter(id=format(movie_id,'07'))
+        movie_by_id = movie.objects.get(id=format(movie_id,'07'))
         print(movie_by_id)
         temp = None
-        for m in movie_by_id:
-            temp = m
+        # for m in movie_by_id:
+        temp = movie_by_id
         # items = Item.objects.filter(type_id=type_no)
         actors = actor.objects.filter(movieId=temp)
         temp2 = None
@@ -173,6 +173,25 @@ def movieDetail(request, movie_id):
             temp2 = m
 
         ia = imdb.IMDb()
+
+        #comments
+        comments = Comment.objects.filter(active=True)
+        new_comment = None
+
+        if request.method == 'POST':
+            comment_form = CommentForm(data=request.POST)
+
+            if comment_form.is_valid():
+                new_comment = comment_form.save(commit=False)
+
+                new_comment.movie_Id = movie_by_id
+                new_comment.username = request.session['username']
+
+                new_comment.save()
+        else:
+            comment_form = CommentForm()
+
+
         actorList=[]
         if temp2.actor1 != '':
             actorList.append(ia.get_person(temp2.actor1)['name'])
@@ -185,11 +204,22 @@ def movieDetail(request, movie_id):
             context = {
                 'username': request.session['username'],
                 'movieData':temp,
-                'actorList':actorList
+                'actorList':actorList,
+                'movie_detail': movie_by_id,
+                'comments': comments,
+                'new_comment': new_comment,
+                'comment_form': comment_form
             }
-            return render(request, 'movie.html', context)
+
+            if request.POST:
+                return redirect('/movie/' + str(movie_by_id.id))
+            else:
+                return render(request, 'movie.html', context)
         response = HttpResponse()
-        return render(request, 'movie.html', {'movieData':temp})
+        return render(request, 'movie.html', {'movieData':temp,
+                                              'movie_detail': movie_by_id,
+                                              'comments': comments,
+                                              })
         # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
         # response.write(para)
         # return response

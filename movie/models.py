@@ -55,3 +55,17 @@ class order(RandomIDModel):
     ordered_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=choices, default='P')
 
+
+class Comment(models.Model):
+    movie_Id = models.ForeignKey(movie, on_delete=models.CASCADE)
+    likes = models.PositiveIntegerField(default=0)
+    username = models.CharField(max_length=50)
+    body = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return 'Comment {} by {}'.format(self.body, self.username)

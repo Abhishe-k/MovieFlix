@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .data import Data
-from .forms import ImageForm, OrderForm
-from .models import profile, order
+from .forms import ImageForm, OrderForm, CommentForm
+from .models import profile, order, movie
 
 
 def movies(request):
@@ -54,5 +54,26 @@ def view_image(request):
                                                      'media_url': settings.MEDIA_URL})
 
 
+def comment_details(request):
+    movie_detail = get_object_or_404(movie, slug=slug)
+    comments = movie_detail.comments.filter(active=True)
+    new_comment = None
 
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+
+            new_comment.movie_detail = movie_detail
+            new_comment.username = request.session['username']
+
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+
+    return render(request, 'comment.html', {'movie_detail': movie_detail,
+                                      'comments': comments,
+                                      'new_comment': new_comment,
+                                      'comment_form': comment_form})
 
