@@ -55,3 +55,5 @@ class order(RandomIDModel):
     ordered_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=choices, default='P')
 
+    def __str__(self):
+        return "1)Requested By: "+str(self.username) + " " + "2)Title requested: "+str(self.title) + " "  + "3)Status: "+str(self.status)+ " "  + "4)Request Date: "+str(self.ordered_at)
