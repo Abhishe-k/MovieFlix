@@ -85,7 +85,7 @@ def logout(request):
     return redirect('/home')
 
 def movies(request):
-    allmovies = movie.objects.all()
+    allmovies = movie.objects.all().order_by("-year")
     g1 = set(movie.objects.values_list('genre1', flat=True))
 
     g2 = set(movie.objects.values_list('genre2', flat=True))
@@ -126,7 +126,7 @@ def movies(request):
         if year:
             query.add(Q(year=year), Q.AND)
 
-        all_movies = movie.objects.filter(query)
+        all_movies = movie.objects.filter(query).order_by("-year")
         allmovies = all_movies
         print(allmovies)
 
@@ -141,17 +141,25 @@ def movies(request):
         except EmptyPage:
             movies_list = paginator.page(paginator.num_pages)
         print(movies_list)
-    if 'username' in request.session.keys():
-        context = {
-            'username': request.session['username'],
+    context = {
             'movies': movies_list,
             'genres': genre_list,
             'years': year_list,
             'genre': genre,
             'year': year
         }
+    if 'username' in request.session.keys():
+        # context = {
+        #     'username': request.session['username'],
+        #     'movies': movies_list,
+        #     'genres': genre_list,
+        #     'years': year_list,
+        #     'genre': genre,
+        #     'year': year
+        # }
+        context['username'] = request.session['username']
         return render(request, 'movies.html', context)
-    return render(request, 'movies.html', {'movies': list(allmovies)})
+    return render(request, 'movies.html', context)
 def movieDetail(request, movie_id):
         movie_by_id=  movie.objects.filter(id=format(movie_id,'07'))
         print(movie_by_id)
@@ -164,7 +172,7 @@ def movieDetail(request, movie_id):
         for m in actors:
             temp2 = m
 
-        ia = imdb.Cinemagoer()
+        ia = imdb.IMDb()
         actorList=[]
         if temp2.actor1 != '':
             actorList.append(ia.get_person(temp2.actor1)['name'])
