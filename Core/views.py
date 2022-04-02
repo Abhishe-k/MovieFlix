@@ -5,8 +5,7 @@ from django.contrib.auth.models import User
 
 from movie.forms import OrderForm, ImageForm
 from .forms import SignUpForm, SignInForm
-from movie.models import movie, profile
-from movie.models import movie, actor, order, topmovie
+from movie.models import movie, actor, order, topmovie, profile
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
@@ -67,7 +66,7 @@ def loginUser(request):
 
 
 def home(request):
-    form = OrderForm()
+
     topTen = topmovie.objects.filter()[:11]
     topTwenty = topmovie.objects.filter()[12:32]
     context = {
@@ -76,7 +75,7 @@ def home(request):
     }
     if 'username' in request.session.keys():
         context['username'] = request.session['username']
-        context['form'] = form
+
         return render(request, 'home.html', context)
     return render(request, 'home.html',context)
 
@@ -192,11 +191,11 @@ def profile_user(request):
     if 'username' not in request.session.keys():
         print('usad')
         return redirect('/signin')
-
+    form = OrderForm()
     user = User.objects.get(username=request.session['username'])
-
+    orderList = order.objects.all()
     # usr_img = profile.objects.get(username=request.session['username'])
-    context = {'user': user, 'username': request.session['username']}
+    context = {'user': user, 'username': request.session['username'],'orderForm':form,'orderList':orderList}
 
     try:
         usr_img = profile.objects.get(username=request.session['username'])
@@ -224,4 +223,5 @@ def order_movie(request):
     if request.POST:
         obj = order(username=request.session['username'], title=request.POST['title'])
         obj.save()
-        return render(request, 'base.html', {'msg': 'Order placed successfully for ' + request.POST['title']})
+
+        return redirect('/profile')

@@ -53,5 +53,5 @@ class order(RandomIDModel):
     choices = [('A', 'Approved'), ('P', 'Pending')]
     title = models.CharField(max_length=100)
     ordered_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=2, choices=choices, default=choices[1])
+    status = models.CharField(max_length=2, choices=choices, default='P')
 

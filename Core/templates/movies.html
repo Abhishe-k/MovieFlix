@@ -46,16 +46,16 @@
     <div>
         <div class="row">
             <div class="col">
-                <label for="genre">Genre</label>
+                <label style="color: white" for="genre">Genre</label>
                 <select name="genre" class="form-control">
-                    <option value={{ genre }} selected>{{ genre }}</option>
+                    <option value={{ genre }} selected></option>
                     {%for g in genres %}
                         <option value={{ g }}>{{ g | title }}</option>
                     {%endfor %}
                  </select>
             </div>
             <div class="col">
-                <label for="year">Year</label>
+                <label style="color: white" for="year">Year</label>
                 <select name="year" class="form-control">
                     <option value={{ year }}></option>
                     {% for y in years %}
@@ -72,11 +72,14 @@
  </form>
    <div class="row row-cols-1 row-cols-md-6 g-4" style="margin: 30px 5% 30px 5%">
        {% for m in movies %}
-           <div class="col">
-            <div class="card h-100">
-              <img src={{ m.imageUrl }} height="100%" class="card-img-top" alt="...">
+           <div class="col imageCard"  onclick="window.location.href = '/movie/{{ m.id }}';">
+            <div class="card h-100" style="background-color: black">
+              <img class="image" src={{ m.imageUrl }} height="100%" class="card-img-top" alt="...">
+                <div class="middle">
+                    {{ m.genre1}} <br> {{ m.genre2 }} <br> {{ m.rating }}
+                </div>
               <div class="card-body">
-                <h5 class="card-title"><a href="/movie/{{ m.id }}">{{ m.title }}</a></h5>
+                <h5 class="card-title"><p style="color: white">{{ m.title }}</p></h5>
                 <p class="card-text"></p>
               </div>
             </div>

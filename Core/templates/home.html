@@ -45,7 +45,7 @@
                <div class="col-md-3">
                      {% for a in topTen %}
                 <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}" id="slide{{ forloop.counter }}" style="width: auto" >
-                    <img src="{{ a.topId.imageUrl }}" style="width: auto;height: 400px;max-height: 400px;">
+                    <img  src="{{ a.topId.imageUrl }}" style="width: auto;height: 400px;max-height: 400px;">
                     <div class="carousel-caption">
 
 
@@ -73,14 +73,18 @@
 </div>
 
 <div class="container">
-    <h2>Top Movies</h2>
-        <div class="row row-cols-1 row-cols-md-4 g-6">
+    <h2 style="color: white">Top Movies</h2>
+        <div class="row row-cols-1 row-cols-md-4 g-6 g-lg-4">
              {% for m in topTwenty %}
-              <div class="col">
+              <div class="col imageCard" onclick="window.location.href = '/movie/{{ m.topId.id }}';" >
                 <div class="card h-100" >
-                  <img src={{ m.topId.imageUrl }} width:'auto' height="450px" alt="">
-                  <div class="card-body">
-                    <h5 class="card-title"><a href="/movie/{{ m.topId.id }}">{{ m.topId.title}}</a></h5>
+                  <img class="image" src={{ m.topId.imageUrl }}  width:'auto' height="350px" alt="">
+                    <div class="middle">
+                        {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}
+  </div>
+                  <div class="card-body" style="background-color: black">
+
+                    <h5 class="card-title" style="color: white"><p>{{ m.topId.title}}</p></h5>
         {#            <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>#}
                   </div>
                 </div>
