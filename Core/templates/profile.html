@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{##}
+{#<h4>Username: {{ user.username }}</h4>#}
+{#<h4>First name: {{ user.first_name }}</h4>#}
+{#<h4>Last name: {{ user.last_name }}</h4>#}
+{##}
+{#{% if form %}#}
+{#    <form method="post" action="upload/" enctype="multipart/form-data">#}
+{#  {% csrf_token %}#}
+{#   {{ form.as_p }}#}
+{#  <button type="submit">Upload</button>#}
+{#</form>#}
+{#{% endif %}#}
+{##}
+{#{% if img %}#}
+{#    <img src="http://127.0.0.1:8000/movies{{ img.url }}" style="max-height:300px">#}
+{#{% endif %}#}
+<section style="background-color: #eee;">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4" style="height: 100%">
+          <div class="card-body text-center">
+              {% if img %}
+                    <img src="http://127.0.0.1:8000/movies{{ img.url }}" style="max-height:300px">
+                  {% else %}
+                              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+
+                {% endif %}
+            <h5 class="my-3">{{ user.first_name }} &nbsp;{{ user.last_name }}</h5>
+            <p class="text-muted mb-1">Username - {{ user.username }}</p>
+              <br>
+            <div class="d-flex justify-content-center mb-2">
+              {% if form %}
+                    <form method="post" action="upload/" enctype="multipart/form-data">
+                  {% csrf_token %}
+                   {{ form.as_p }}
+                  <button type="submit">Upload</button>
+                </form>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+       <div class="col-lg-8" >
+        <div class="card mb-4" style="height: 100%">
+          <div class="card-body" >
+             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              Order Movie
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <form action="order/" method="POST">
+                          {% csrf_token %}
+                          {{ orderForm.as_p }}
+                          <button type="Submit" class="btn btn-primary">Order</button>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+
+
+{#                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>#}
+{#                    <button type="button" class="btn btn-primary">Save changes</button>#}
+                  </div>
+                </div>
+              </div>
+            </div>
+          <table class="table table-hover">
+  <thead>
+    <tr>
+         <th scope="col">OrderID</th>
+      <th scope="col">Movie</th>
+      <th scope="col">Status</th>
+      <th scope="col">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for o in orderList %}
+       <tr>
+
+      <td>{{ o.id }}</td>
+      <td>{{ o.title }}</td>
+      <td>{% if o.status == 'P' %}
+          Pending
+          {% else %}
+          Approved
+      {% endif %}</td>
+        <td>{{o.ordered_at}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -32,82 +32,68 @@
 {#    </div>#}
 {#  </header>#}
 <main>
-    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+   <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" >
+
+          <div class="carousel-inner" >
+          <div class="row">
+              <div class="col-md-3">
+
+              </div>
+           <div class="col-md-2">
+
+              </div>
+               <div class="col-md-3">
+                     {% for a in topTen %}
+                <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}" id="slide{{ forloop.counter }}" style="width: auto" >
+                    <img  src="{{ a.topId.imageUrl }}" style="width: auto;height: 400px;max-height: 400px;">
+                    <div class="carousel-caption">
+
+
+                    </div>
+                </div>
+            {% endfor %}
+              </div>
+        <div class="col-md-1">
+
+              </div>
+           <div class="col-md-3">
+
+              </div>
+          </div>
+
     </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <svg class="bd-placeholder-img" width="100%" height="400px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev" >
+    <span class="carousel-control-prev-icon" style="background-color: black" aria-hidden="true"></span>
+    <span class="visually-hidden" style="background-color: black">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next" >
+    <span class="carousel-control-next-icon" style="background-color: black" aria-hidden="true"></span>
+    <span class="visually-hidden" style="background-color: black">Next</span>
+  </button>
+</div>
 
-        <div class="container">
-          <div class="carousel-caption text-start">
-            <h1>Example headline.</h1>
-            <p>Some representative placeholder content for the first slide of the carousel.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>
-          </div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <svg class="bd-placeholder-img" width="100%" height="400px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
-
-        <div class="container">
-          <div class="carousel-caption">
-            <h1>Another example headline.</h1>
-            <p>Some representative placeholder content for the second slide of the carousel.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
-          </div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <svg class="bd-placeholder-img" width="100%" height="400px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
-
-        <div class="container">
-          <div class="carousel-caption text-end">
-            <h1>One more for good measure.</h1>
-            <p>Some representative placeholder content for the third slide of this carousel.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+<div class="container">
+    <h2 style="color: white">Top Movies</h2>
+        <div class="row row-cols-1 row-cols-md-4 g-6 g-lg-4">
+             {% for m in topTwenty %}
+              <div class="col imageCard" onclick="window.location.href = '/movie/{{ m.topId.id }}';" >
+                <div class="card h-100" >
+                  <img class="image" src={{ m.topId.imageUrl }}  width:'auto' height="350px" alt="">
+                    <div class="middle">
+                        {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}
   </div>
- <div class="row" style="margin: 2% 0% 2% 10%">
-      <div class="col-lg-3">
-        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+                  <div class="card-body" style="background-color: black">
 
-        <h2>Heading</h2>
-        <p><a class="btn btn-secondary" href="#">View details &raquo;</a></p>
-      </div><!-- /.col-lg-4 -->
-      <div class="col-lg-3">
-        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+                    <h5 class="card-title" style="color: white"><p>{{ m.topId.title}}</p></h5>
+        {#            <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>#}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
 
-        <h2>Heading</h2>
-        <p><a class="btn btn-secondary" href="#">View details &raquo;</a></p>
-      </div><!-- /.col-lg-4 -->
-      <div class="col-lg-3">
-        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
 
-        <h2>Heading</h2>
-        <p><a class="btn btn-secondary" href="#">View details &raquo;</a></p>
-      </div><!-- /.col-lg-4 -->
-     <div class="col-lg-3">
-        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+        </div>
 
-        <h2>Heading</h2>
-        <p><a class="btn btn-secondary" href="#">View details &raquo;</a></p>
-      </div>
-    </div><!-- /.row -->
 </main>
 
 
