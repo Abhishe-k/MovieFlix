@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
 from movie.forms import OrderForm, ImageForm
-from .forms import SignUpForm, SignInForm
-from movie.models import movie, actor, order, topmovie, profile
+from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm
+from movie.models import movie, actor, order, topmovie, profile, usertoken
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
@@ -66,6 +66,105 @@ def loginUser(request):
         'form': form,
     }
     return render(request, 'signin.html', context)
+
+def forgot_password(request):
+    if request.POST:
+        user_email = request.POST['email']
+        user  = User.objects.get(email=user_email)
+        if user:
+            try:
+                user_token =  usertoken.objects.get(email=user.email)
+                token = user_token.id
+            except:
+                user_token = usertoken(username=user.username, email=user.email)
+                user_token.save()
+                token = usertoken.objects.get(email=user_email).id
+
+            subject = 'Reset Password'
+            message = ' You have requested to reset your password ' + user.username + \
+                      "Please click the below link to reset your password http://127.0.0.1:8000/resetpassword"
+
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = []
+            recipient_list.append(user_email)
+            htmlmessage = """
+                        <html lang="en">
+                <head>
+                  <title>Bootstrap Example</title>
+                  <meta charset="utf-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
+                  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+                  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+                  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+                </head>
+                <body>
+                <div class="container">
+    
+                """ \
+                          + " <center><h2>Request to reset password of <strong> " + str(
+                user.username) + " </strong>!</h2></center> " \
+                            """
+                            <div class="card">
+                                                                                                   <div class="card-body" style="text-align: center">
+                                                                                                     <h4 class="card-title"></h4>
+                                                                                                     <p class="card-text">Hi, to reset your password, please click the below link: <strong>
+            <a href="http://127.0.0.1:8000/resetpassword/"""+str(token) + ""\
+                                 """
+                                 ">Reset Password</a> </strong>" 
+                                               </p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          </body>
+                                          </html>
+                                                  """
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
+            print(email_from + str(recipient_list) + message + user_email)
+            return render(request,"password_reset_done.html")
+        else:
+            return HttpResponse("User with this email not found. Please try again")
+    else:
+        form = ForgotPasswordForm()
+    return render(request,"forgotpassword.html",{"form":form})
+
+def change_password(request,token):
+    print(request.POST)
+    valid = False
+
+    user_token = usertoken.objects.filter(id=token)
+    if user_token:
+        valid = True
+        if request.method == 'POST':
+            form = ResetPasswordForm(request.POST)
+            print(form.errors)
+            if form.is_valid():
+                # print(request.POST)
+                password = request.POST['password']
+                confirm_password = request.POST['confirm_password']
+                user = User.objects.get(username=user_token.username)
+                if user:
+                    if password == confirm_password:
+                        user.set_password(password)
+                        user.save()
+                        user_token.delete()
+                        return redirect('/signin')
+                    else:
+                        return HttpResponse("Please enter valid credentials.")
+
+        else:
+            form = ResetPasswordForm()
+
+        context = {
+            'form': form,
+            'valid': valid
+        }
+        return render(request, 'resetpassword.html', context)
+    else:
+        context = {
+            'valid': valid
+        }
+        return render(request, 'resetpassword.html', context)
 
 
 def home(request):

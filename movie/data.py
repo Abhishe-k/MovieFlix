@@ -1,10 +1,10 @@
 from .models import movie, actor, topmovie
 import imdb
+
 NO_OF_MOVIES = 1000
 
 
 class Data:
-
     movies = []
 
     def load_actors(self, m, movie_id):
@@ -49,7 +49,6 @@ class Data:
         # act.update()
 
         print(temp)
-
 
     def get_movies(self, top):
         temp = None
@@ -139,18 +138,18 @@ class Data:
                 id = format(i, '07')
 
             self.movies.append({'id': id,
-                           'title': title,
-                           'imageUrl': imageUrl,
-                           'director': director,
-                           'releaseDate': releaseDate,
-                           'genre1': genre1,
-                           'genre2': genre2,
-                           'plot': plot,
-                           'rating': rating,
-                           'votes': votes,
-                           'runtime': runtime,
-                           'year': year,
-                            'cast': cast})
+                                'title': title,
+                                'imageUrl': imageUrl,
+                                'director': director,
+                                'releaseDate': releaseDate,
+                                'genre1': genre1,
+                                'genre2': genre2,
+                                'plot': plot,
+                                'rating': rating,
+                                'votes': votes,
+                                'runtime': runtime,
+                                'year': year,
+                                'cast': cast})
 
             print(self.movies[i - 1])
             # print({'id': format(i, '07'),
@@ -177,8 +176,6 @@ class Data:
                 temp.save()
                 rank += 1
 
-
-
             if not movie.objects.filter(id=m['id']):
                 print('Adding to database', m['id'])
 
@@ -187,7 +184,6 @@ class Data:
                 temp.save()
 
                 print('Saved.')
-
 
             # self.load_actors(m, m['id'])
 

@@ -57,3 +57,12 @@ class order(RandomIDModel):
 
     def __str__(self):
         return "1)Requested By: "+str(self.username) + " " + "2)Title requested: "+str(self.title) + " "  + "3)Status: "+str(self.status)+ " "  + "4)Request Date: "+str(self.ordered_at)
+
+
+class usertoken(RandomIDModel):
+    username = models.CharField(max_length=50)
+    email = models.CharField(max_length=100, unique=True)
+    requested_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "1)Email:" + self.email + " 2)Username: " + self.username
