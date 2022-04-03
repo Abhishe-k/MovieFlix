@@ -74,25 +74,48 @@
 
 <div class="container">
     <h2 style="color: white">Top Movies</h2>
-        <div class="row row-cols-1 row-cols-md-4 g-6 g-lg-4">
-             {% for m in topTwenty %}
-              <div class="col imageCard" onclick="window.location.href = '/movie/{{ m.topId.id }}';" >
-                <div class="card h-100" >
-                  <img class="image" src={{ m.topId.imageUrl }}  width:'auto' height="350px" alt="">
-                    <div class="middle">
-                        {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}
-  </div>
-                  <div class="card-body" style="background-color: black">
+<div class="row row-cols-1 row-cols-md-4 g-4" >
+       {% for m in topTwenty %}
+           <div class="col imageCard">
+            <div class="card h-100" style="background-color: black">
+              <img class="image" onclick="window.location.href = '/movie/{{ m.topId.id }}';" src={{ m.topId.imageUrl }} height="100%" class="card-img-top" alt="...">
+                <div class="middle">
+                    {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}
+                    <br>
+                     <p class="card-text">
 
-                    <h5 class="card-title" style="color: white"><p>{{ m.topId.title}}</p></h5>
-        {#            <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>#}
-                  </div>
-                </div>
+                    </p>
+                    </div>
+              <div class="card-body">
+                <h5 class="card-title" onclick="window.location.href = '/movie/{{ m.topId.id }}';"><p style="color: white;font-size: 14px">{{ m.topId.title }}</p></h5>
+
+
               </div>
-            {% endfor %}
+            </div>
+          </div>
+       {% endfor %}
 
-
-        </div>
+   </div>
+{#        <div class="row row-cols-1 row-cols-md-6 g-4">#}
+{#             {% for m in topTwenty %}#}
+{##}
+{#              <div class="col imageCard" onclick="window.location.href = '/movie/{{ m.topId.id }}';" >#}
+{#                <div class="card h-100" >#}
+{#                  <img class="image" src={{ m.topId.imageUrl }}  width:'auto' height="100%" alt="">#}
+{#                    <div class="middle">#}
+{#                        {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}#}
+{#  </div>#}
+{#                  <div class="card-body" style="background-color: black">#}
+{##}
+{#                    <h5 class="card-title" style="color: white"><p>{{ m.topId.title}}</p></h5>#}
+        {#            <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            {% endfor %}#}
+{##}
+{##}
+{#        </div>#}
 
 </main>
 
