@@ -294,6 +294,9 @@ def movieDetail(request, movie_id):
     temp = movie_by_id
     # items = Item.objects.filter(type_id=type_no)
     actors = allactors.filter(movieId=temp)
+    # items = Item.objects.filter(type_id=type_no)
+    temp.runtime = temp.runtime.split("'")[1]
+    print(temp.runtime)
     temp2 = None
     for m in actors:
         temp2 = m
@@ -389,41 +392,42 @@ def order_movie(request):
         username = request.session['username']
         title = request.POST['title']
         subject = 'Thank you for requesting to add a new movie to our database'
-        message = ' You have requested to add the following movie to our database ' + request.POST['title'] + ". Thank you for requesting to add a new movie to our database"
+        message = ' You have requested to add the following movie to our database ' + request.POST[
+            'title'] + ". Thank you for requesting to add a new movie to our database"
         email_from = settings.EMAIL_HOST_USER
         recipient_list = []
         recipient_list.append(user_email)
         htmlmessage = """
-        <html lang="en">
-<head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
-<div class="container">
+            <html lang="en">
+    <head>
+      <title>Bootstrap Example</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+    <body>
+    <div class="container">
 
-""" \
- + " <center><h2>Thank you for your request " + str(username) + " !</h2></center> " \
-     """
-  
-  <div class="card">
-    <div class="card-body" style="text-align: center">
-      <h4 class="card-title"></h4>
-      <p class="card-text">Hi, your request to add the title: <strong>
-      """ + str(title) + "  </strong>" \
-      """  
-      to MovieFlix database has been registered successfully. If approved, you would be able to find your requested movie on our website</p>
-    </div>
-  </div>
-</div>
-</body>
-</html>
-        """
+    """ \
+                      + " <center><h2>Thank you for your request " + str(username) + " !</h2></center> " \
+                                                                                     """
+                                                                            
+                                                                                  <div class="card">
+                                                                                    <div class="card-body" style="text-align: center">
+                                                                                      <h4 class="card-title"></h4>
+                                                                                      <p class="card-text">Hi, your request to add the title: <strong>
+                                                                                      """ + str(title) + "  </strong>" \
+                                                                                                         """  
+                             to MovieFlix database has been registered successfully. If approved, you would be able to find your requested movie on our website</p>
+                           </div>
+                         </div>
+                       </div>
+                       </body>
+                       </html>
+                               """
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
         print(email_from + str(recipient_list) + message + user_email)
         return redirect('/profile')

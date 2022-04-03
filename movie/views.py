@@ -77,3 +77,5 @@ def comment_details(request):
                                       'new_comment': new_comment,
                                       'comment_form': comment_form})
 
+def likes(request):
+    likes = request.POST['']

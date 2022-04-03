@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row" style="margin: 2% 2% 0% 2%">
         <div class="col-6">
-            <img src={{ movieData.imageUrl }} width="80%" height="85%%" alt={{ movieData.title }}>
+            <img src={{ movieData.imageUrl }} width="50%" height="auto" alt={{ movieData.title }}>
         </div>
         <div class="col-6" >
             <h2 style="color: white">{{ movieData.title }}</h2>
@@ -24,9 +24,15 @@
             <h6 style="color: white">Runtime &nbsp; <span style="color: blue">{{ movieData.runtime }} <span>Mins</span></span></h6>
 
             <h6 style="color: white">Release Year &nbsp; <span style="color: blue">{{ movieData.year }}</span></h6>
-            <p style="font-size: small;color: white">{{ movieData.plot }}</p>
+{#            <p style="font-size: 10px;color: white">{{ movieData.plot }}</p>#}
+         <div class="show-hide-text">
+          <a  id="show-more" class="show-less" href="#show-less">Show less</a>
+          <a  id="show-less" class="show-more" href="#show-more">Show more</a>
+          <p style="font-size: 10px;color: white">{{ movieData.plot }}</p>
+        </div>
         </div>
     </div>
+    <br>
 <div class="row" style="color:white">
     Reviews:
     {% for comment in comments %}
