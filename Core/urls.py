@@ -13,5 +13,7 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('profile/', profile_user, name='profile'),
     path('profile/upload/', views.image_upload, name='upload'),
+    path('forgotpassword/', views.forgot_password, name='forgotpassword'),
+    path('resetpassword/<int:token>', views.change_password, name='resetpassword'),
 
 ]
