@@ -300,7 +300,7 @@ def movieDetail(request, movie_id):
 
     ia = imdb.IMDb()
 
-    comments = Comment.objects.filter(active=True)
+    comments = Comment.objects.filter(movie_Id=movie_by_id, active=True)
     new_comment = None
 
     if request.method == 'POST':
