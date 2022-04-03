@@ -14,6 +14,10 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import imdb
 
+movie_list_global = movie.objects.all().order_by("-year")
+actor_list_global = actor.objects.all()
+
+
 def registerUser(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -84,16 +88,24 @@ def logout(request):
     del request.session['username']
     return redirect('/home')
 
+
 def movies(request):
-    allmovies = movie.objects.all().order_by("-year")
+    global movie_list_global
+    if not movie_list_global:
+        print("fetching movies...")
+        movie_list_global = movie.objects.all().order_by("-year")
+        allmovies = movie_list_global
+    else:
+        allmovies = movie_list_global
+
     g1 = set(movie.objects.values_list('genre1', flat=True))
 
     g2 = set(movie.objects.values_list('genre2', flat=True))
 
     genre_list = list(set(g1 | g2))
     genre_list.remove('')
-    # min_year = movies.objects.all.min('year')
     year_list = range(1800, 2023)
+
     if "genre" in request.POST.keys():
         genre = request.POST["genre"]
     else:
@@ -126,7 +138,8 @@ def movies(request):
         if year:
             query.add(Q(year=year), Q.AND)
 
-        all_movies = movie.objects.filter(query).order_by("-year")
+        print("List: ", allmovies)
+        all_movies = allmovies.filter(query)
         allmovies = all_movies
         print(allmovies)
 
@@ -148,81 +161,87 @@ def movies(request):
             'genre': genre,
             'year': year
         }
+
     if 'username' in request.session.keys():
-        # context = {
-        #     'username': request.session['username'],
-        #     'movies': movies_list,
-        #     'genres': genre_list,
-        #     'years': year_list,
-        #     'genre': genre,
-        #     'year': year
-        # }
         context['username'] = request.session['username']
         return render(request, 'movies.html', context)
     return render(request, 'movies.html', context)
+
+
 def movieDetail(request, movie_id):
-        movie_by_id = movie.objects.get(id=format(movie_id,'07'))
-        print(movie_by_id)
-        temp = None
-        # for m in movie_by_id:
-        temp = movie_by_id
-        # items = Item.objects.filter(type_id=type_no)
-        actors = actor.objects.filter(movieId=temp)
-        temp2 = None
-        for m in actors:
-            temp2 = m
+    global movie_list_global
+    global actor_list_global
 
-        ia = imdb.IMDb()
+    if not movie_list_global:
+        print("fetching movies...")
+        movie_list_global = movie.objects.all().order_by("-year")
+        actor_list_global = actor.objects.all()
+        allmovies = movie_list_global
+        allactors = actor_list_global
+    else:
+        allmovies = movie_list_global
+        allactors = actor_list_global
 
-        #comments
-        comments = Comment.objects.filter(active=True)
-        new_comment = None
+    movie_by_id = allmovies.get(id=format(movie_id, '07'))
+    print(movie_by_id)
+    temp = None
+    # for m in movie_by_id:
+    temp = movie_by_id
+    # items = Item.objects.filter(type_id=type_no)
+    actors = allactors.filter(movieId=temp)
+    temp2 = None
+    for m in actors:
+        temp2 = m
 
-        if request.method == 'POST':
-            comment_form = CommentForm(data=request.POST)
+    ia = imdb.IMDb()
 
-            if comment_form.is_valid():
-                new_comment = comment_form.save(commit=False)
+    comments = Comment.objects.filter(active=True)
+    new_comment = None
 
-                new_comment.movie_Id = movie_by_id
-                new_comment.username = request.session['username']
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
 
-                new_comment.save()
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+
+            new_comment.movie_Id = movie_by_id
+            new_comment.username = request.session['username']
+
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+
+    actorList=[]
+    if temp2.actor1 != '':
+        actorList.append(ia.get_person(temp2.actor1)['name'])
+    if temp2.actor2 != '':
+        actorList.append(ia.get_person(temp2.actor2)['name'])
+    if temp2.actor3 != '':
+        actorList.append(ia.get_person(temp2.actor3)['name'])
+    print(actorList)
+    if 'username' in request.session.keys():
+        context = {
+            'username': request.session['username'],
+            'movieData':temp,
+            'actorList':actorList,
+            'movie_detail': movie_by_id,
+            'comments': comments,
+            'new_comment': new_comment,
+            'comment_form': comment_form
+        }
+
+        if request.POST:
+            return redirect('/movie/' + str(movie_by_id.id))
         else:
-            comment_form = CommentForm()
-
-
-        actorList=[]
-        if temp2.actor1 != '':
-            actorList.append(ia.get_person(temp2.actor1)['name'])
-        if temp2.actor2 != '':
-            actorList.append(ia.get_person(temp2.actor2)['name'])
-        if temp2.actor3 != '':
-            actorList.append(ia.get_person(temp2.actor3)['name'])
-        print(actorList)
-        if 'username' in request.session.keys():
-            context = {
-                'username': request.session['username'],
-                'movieData':temp,
-                'actorList':actorList,
-                'movie_detail': movie_by_id,
-                'comments': comments,
-                'new_comment': new_comment,
-                'comment_form': comment_form
-            }
-
-            if request.POST:
-                return redirect('/movie/' + str(movie_by_id.id))
-            else:
-                return render(request, 'movie.html', context)
-        response = HttpResponse()
-        return render(request, 'movie.html', {'movieData':temp,
-                                              'movie_detail': movie_by_id,
-                                              'comments': comments,
-                                              })
-        # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
-        # response.write(para)
-        # return response
+            return render(request, 'movie.html', context)
+    response = HttpResponse()
+    return render(request, 'movie.html', {'movieData':temp,
+                                          'movie_detail': movie_by_id,
+                                          'comments': comments,
+                                          })
+    # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
+    # response.write(para)
+    # return response
 
 
 def profile_user(request):
