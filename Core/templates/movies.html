@@ -72,15 +72,20 @@
  </form>
    <div class="row row-cols-1 row-cols-md-6 g-4" style="margin: 30px 5% 30px 5%">
        {% for m in movies %}
-           <div class="col imageCard"  onclick="window.location.href = '/movie/{{ m.id }}';">
+           <div class="col imageCard">
             <div class="card h-100" style="background-color: black">
-              <img class="image" src={{ m.imageUrl }} height="100%" class="card-img-top" alt="...">
+              <img class="image" onclick="window.location.href = '/movie/{{ m.id }}';" src={{ m.imageUrl }} height="100%" class="card-img-top" alt="...">
                 <div class="middle">
                     {{ m.genre1}} <br> {{ m.genre2 }} <br> {{ m.rating }}
-                </div>
+                    <br>
+                     <p class="card-text">
+
+                    </p>
+                    </div>
               <div class="card-body">
-                <h5 class="card-title"><p style="color: white">{{ m.title }}</p></h5>
-                <p class="card-text"></p>
+                <h5 class="card-title" onclick="window.location.href = '/movie/{{ m.id }}';"><p style="color: white">{{ m.title }}</p></h5>
+
+
               </div>
             </div>
           </div>

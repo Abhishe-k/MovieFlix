@@ -1,41 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-{#   <header class="p-3 bg-dark text-white" >#}
-{#    <div class="container">#}
-{#      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">#}
-{#        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"  style="margin-right: 13px;font-size: 20px">#}
-{#          MovieFlix#}
-{#        </a>#}
-{##}
-{#        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">#}
-{#          <li><a href="/home" class="nav-link px-2 text-white">Home</a></li>#}
-{#          <li><a href="/movies" class="nav-link px-2 text-white">Movies</a></li>#}
-{#          <li><a href="#" class="nav-link px-2 text-white">Actors</a></li>#}
-{##}
-{#        </ul>#}
-{##}
-{#        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">#}
-{#          <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">#}
-{#        </form>#}
-{##}
-{#        {% if username  %}#}
-{#            {{ username }} &nbsp;&nbsp; <a href="/logout">Logout</a>#}
-{#        {% else %}#}
-{#             <div class="text-end">#}
-{#              <button type="button" class="btn btn-outline-light me-2"><a href="/signin" style="color: gold">Sign-In</a></button>#}
-{#              <button type="button" class="btn btn-warning"><a href="/signup" style="color: black">Sign-up</a></button>#}
-{#            </div>#}
-{#        {% endif %}#}
-{##}
-{#      </div>#}
-{#    </div>#}
-{#  </header>#}
+
 <main>
 <div class="container">
     <div class="row" style="margin: 2% 2% 0% 2%">
         <div class="col-6">
-            <img src={{ movieData.imageUrl }} width="80%" height="85%%" alt={{ movieData.title }}>
+            <img src={{ movieData.imageUrl }} width="50%" height="auto" alt={{ movieData.title }}>
         </div>
         <div class="col-6" >
             <h2 style="color: white">{{ movieData.title }}</h2>
@@ -53,12 +24,50 @@
             <h6 style="color: white">Runtime &nbsp; <span style="color: blue">{{ movieData.runtime }} <span>Mins</span></span></h6>
 
             <h6 style="color: white">Release Year &nbsp; <span style="color: blue">{{ movieData.year }}</span></h6>
-            <p style="font-size: small;color: white">{{ movieData.plot }}</p>
+{#            <p style="font-size: 10px;color: white">{{ movieData.plot }}</p>#}
+         <div class="show-hide-text">
+          <a  id="show-more" class="show-less" href="#show-less">Show less</a>
+          <a  id="show-less" class="show-more" href="#show-more">Show more</a>
+          <p style="font-size: 10px;color: white">{{ movieData.plot }}</p>
+        </div>
         </div>
     </div>
-    <div class="row">
-
+    <br>
+<div class="row" style="color:white">
+    Reviews:
+    {% for comment in comments %}
+    <div class="comments" style="padding: 10px;">
+      <p class="font-weight-bold">
+        <span class=" text-muted font-weight-normal">
+          On {{ comment.created_on }} by {{ comment.username }}
+        </span>
+      </p>
+      {{ comment.body | linebreaks }}
     </div>
+{% endfor %}
+</div>
+
+
+<div class="col-md-8 mb-8 mt-3 " style="background-color: black; width:80%; color:white" >
+      <div class="card-body" style="width:100%">
+        {% if new_comment %}
+        <div class="alert alert-success" role="alert">
+          Your comment is awaiting moderation
+        </div>
+        {% else %}
+            {% if username %}
+                <h3>Leave a comment</h3>
+                <form method="post" style="margin-top: 1.3em;">
+                {% csrf_token %}
+                  {{ comment_form.as_p }}
+                  <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+                </form>
+            {% else %}
+                <h5>Please signin to leave a comment.</h5>
+            {% endif %}
+        {% endif %}
+      </div>
+</div>
 </div>
 </main>
 

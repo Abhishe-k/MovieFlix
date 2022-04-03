@@ -3,16 +3,26 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
-from movie.forms import OrderForm, ImageForm
+from movie.forms import OrderForm, ImageForm, CommentForm
 from .forms import SignUpForm, SignInForm
-from movie.models import movie, actor, order, topmovie, profile
+from movie.models import movie, actor, order, topmovie, profile, Comment
+from movie.forms import OrderForm, ImageForm
+from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm
+from movie.models import movie, actor, order, topmovie, profile, usertoken
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.mail import EmailMessage
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import imdb
+
+movie_list_global = movie.objects.all().order_by("-year")
+actor_list_global = actor.objects.all()
+
 
 def registerUser(request):
     if request.method == 'POST':
@@ -64,6 +74,105 @@ def loginUser(request):
     }
     return render(request, 'signin.html', context)
 
+def forgot_password(request):
+    if request.POST:
+        user_email = request.POST['email']
+        user  = User.objects.get(email=user_email)
+        if user:
+            try:
+                user_token =  usertoken.objects.get(email=user.email)
+                token = user_token.id
+            except:
+                user_token = usertoken(username=user.username, email=user.email)
+                user_token.save()
+                token = usertoken.objects.get(email=user_email).id
+
+            subject = 'Reset Password'
+            message = ' You have requested to reset your password ' + user.username + \
+                      "Please click the below link to reset your password http://127.0.0.1:8000/resetpassword"
+
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = []
+            recipient_list.append(user_email)
+            htmlmessage = """
+                        <html lang="en">
+                <head>
+                  <title>Bootstrap Example</title>
+                  <meta charset="utf-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
+                  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+                  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+                  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+                </head>
+                <body>
+                <div class="container">
+    
+                """ \
+                          + " <center><h2>Request to reset password of <strong> " + str(
+                user.username) + " </strong>!</h2></center> " \
+                            """
+                            <div class="card">
+                                                                                                   <div class="card-body" style="text-align: center">
+                                                                                                     <h4 class="card-title"></h4>
+                                                                                                     <p class="card-text">Hi, to reset your password, please click the below link: <strong>
+            <a href="http://127.0.0.1:8000/resetpassword/"""+str(token) + ""\
+                                 """
+                                 ">Reset Password</a> </strong>" 
+                                               </p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          </body>
+                                          </html>
+                                                  """
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
+            print(email_from + str(recipient_list) + message + user_email)
+            return render(request,"password_reset_done.html")
+        else:
+            return HttpResponse("User with this email not found. Please try again")
+    else:
+        form = ForgotPasswordForm()
+    return render(request,"forgotpassword.html",{"form":form})
+
+def change_password(request,token):
+    print(request.POST)
+    valid = False
+
+    user_token = usertoken.objects.filter(id=token)
+    if user_token:
+        valid = True
+        if request.method == 'POST':
+            form = ResetPasswordForm(request.POST)
+            print(form.errors)
+            if form.is_valid():
+                # print(request.POST)
+                password = request.POST['password']
+                confirm_password = request.POST['confirm_password']
+                user = User.objects.get(username=user_token.username)
+                if user:
+                    if password == confirm_password:
+                        user.set_password(password)
+                        user.save()
+                        user_token.delete()
+                        return redirect('/signin')
+                    else:
+                        return HttpResponse("Please enter valid credentials.")
+
+        else:
+            form = ResetPasswordForm()
+
+        context = {
+            'form': form,
+            'valid': valid
+        }
+        return render(request, 'resetpassword.html', context)
+    else:
+        context = {
+            'valid': valid
+        }
+        return render(request, 'resetpassword.html', context)
+
 
 def home(request):
 
@@ -84,16 +193,24 @@ def logout(request):
     del request.session['username']
     return redirect('/home')
 
+
 def movies(request):
-    allmovies = movie.objects.all().order_by("-year")
+    global movie_list_global
+    if not movie_list_global:
+        print("fetching movies...")
+        movie_list_global = movie.objects.all().order_by("-year")
+        allmovies = movie_list_global
+    else:
+        allmovies = movie_list_global
+
     g1 = set(movie.objects.values_list('genre1', flat=True))
 
     g2 = set(movie.objects.values_list('genre2', flat=True))
 
     genre_list = list(set(g1 | g2))
     genre_list.remove('')
-    # min_year = movies.objects.all.min('year')
     year_list = range(1800, 2023)
+
     if "genre" in request.POST.keys():
         genre = request.POST["genre"]
     else:
@@ -126,7 +243,8 @@ def movies(request):
         if year:
             query.add(Q(year=year), Q.AND)
 
-        all_movies = movie.objects.filter(query).order_by("-year")
+        print("List: ", allmovies)
+        all_movies = allmovies.filter(query)
         allmovies = all_movies
         print(allmovies)
 
@@ -148,51 +266,90 @@ def movies(request):
             'genre': genre,
             'year': year
         }
+
     if 'username' in request.session.keys():
-        # context = {
-        #     'username': request.session['username'],
-        #     'movies': movies_list,
-        #     'genres': genre_list,
-        #     'years': year_list,
-        #     'genre': genre,
-        #     'year': year
-        # }
         context['username'] = request.session['username']
         return render(request, 'movies.html', context)
     return render(request, 'movies.html', context)
-def movieDetail(request, movie_id):
-        movie_by_id=  movie.objects.filter(id=format(movie_id,'07'))
-        print(movie_by_id)
-        temp = None
-        for m in movie_by_id:
-            temp = m
-        # items = Item.objects.filter(type_id=type_no)
-        actors = actor.objects.filter(movieId=temp)
-        temp2 = None
-        for m in actors:
-            temp2 = m
 
-        ia = imdb.IMDb()
-        actorList=[]
-        if temp2.actor1 != '':
-            actorList.append(ia.get_person(temp2.actor1)['name'])
-        if temp2.actor2 != '':
-            actorList.append(ia.get_person(temp2.actor2)['name'])
-        if temp2.actor3 != '':
-            actorList.append(ia.get_person(temp2.actor3)['name'])
-        print(actorList)
-        if 'username' in request.session.keys():
-            context = {
-                'username': request.session['username'],
-                'movieData':temp,
-                'actorList':actorList
-            }
+
+def movieDetail(request, movie_id):
+    global movie_list_global
+    global actor_list_global
+
+    if not movie_list_global:
+        print("fetching movies...")
+        movie_list_global = movie.objects.all().order_by("-year")
+        actor_list_global = actor.objects.all()
+        allmovies = movie_list_global
+        allactors = actor_list_global
+    else:
+        allmovies = movie_list_global
+        allactors = actor_list_global
+
+    movie_by_id = allmovies.get(id=format(movie_id, '07'))
+    print(movie_by_id)
+    temp = None
+    # for m in movie_by_id:
+    temp = movie_by_id
+    # items = Item.objects.filter(type_id=type_no)
+    actors = allactors.filter(movieId=temp)
+    # items = Item.objects.filter(type_id=type_no)
+    temp.runtime = temp.runtime.split("'")[1]
+    print(temp.runtime)
+    temp2 = None
+    for m in actors:
+        temp2 = m
+
+    ia = imdb.IMDb()
+
+    comments = Comment.objects.filter(movie_Id=movie_by_id, active=True)
+    new_comment = None
+
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+
+            new_comment.movie_Id = movie_by_id
+            new_comment.username = request.session['username']
+
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+
+    actorList=[]
+    if temp2.actor1 != '':
+        actorList.append(ia.get_person(temp2.actor1)['name'])
+    if temp2.actor2 != '':
+        actorList.append(ia.get_person(temp2.actor2)['name'])
+    if temp2.actor3 != '':
+        actorList.append(ia.get_person(temp2.actor3)['name'])
+    print(actorList)
+    if 'username' in request.session.keys():
+        context = {
+            'username': request.session['username'],
+            'movieData':temp,
+            'actorList':actorList,
+            'movie_detail': movie_by_id,
+            'comments': comments,
+            'new_comment': new_comment,
+            'comment_form': comment_form
+        }
+
+        if request.POST:
+            return redirect('/movie/' + str(movie_by_id.id))
+        else:
             return render(request, 'movie.html', context)
-        response = HttpResponse()
-        return render(request, 'movie.html', {'movieData':temp})
-        # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
-        # response.write(para)
-        # return response
+    response = HttpResponse()
+    return render(request, 'movie.html', {'movieData':temp,
+                                          'movie_detail': movie_by_id,
+                                          'comments': comments,
+                                          })
+    # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
+    # response.write(para)
+    # return response
 
 
 def profile_user(request):
@@ -231,5 +388,46 @@ def order_movie(request):
     if request.POST:
         obj = order(username=request.session['username'], title=request.POST['title'])
         obj.save()
+        user_email = User.objects.get(username=request.session['username']).email
+        username = request.session['username']
+        title = request.POST['title']
+        subject = 'Thank you for requesting to add a new movie to our database'
+        message = ' You have requested to add the following movie to our database ' + request.POST[
+            'title'] + ". Thank you for requesting to add a new movie to our database"
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = []
+        recipient_list.append(user_email)
+        htmlmessage = """
+            <html lang="en">
+    <head>
+      <title>Bootstrap Example</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+    <body>
+    <div class="container">
 
+    """ \
+                      + " <center><h2>Thank you for your request " + str(username) + " !</h2></center> " \
+                                                                                     """
+                                                                            
+                                                                                  <div class="card">
+                                                                                    <div class="card-body" style="text-align: center">
+                                                                                      <h4 class="card-title"></h4>
+                                                                                      <p class="card-text">Hi, your request to add the title: <strong>
+                                                                                      """ + str(title) + "  </strong>" \
+                                                                                                         """  
+                             to MovieFlix database has been registered successfully. If approved, you would be able to find your requested movie on our website</p>
+                           </div>
+                         </div>
+                       </div>
+                       </body>
+                       </html>
+                               """
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
+        print(email_from + str(recipient_list) + message + user_email)
         return redirect('/profile')
