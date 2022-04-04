@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from Core.models import Contact
+
 
 class SignUpForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput(), max_length=30, required=True)
@@ -82,4 +84,12 @@ class ResetPasswordForm(forms.Form):
         return self.cleaned_data
 
 
+class ContactForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}),max_length=100, label="Name", required=True)
+    email = forms.CharField(widget=forms.EmailInput(attrs={'class':'form-control'}), max_length=100, required=True)
+    message = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control','rows':3}), max_length=100, required=True)
 
+
+    class Meta:
+        model = Contact
+        fields=['name', 'email', 'message']

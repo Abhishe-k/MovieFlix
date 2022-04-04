@@ -65,13 +65,16 @@ class Comment(models.Model):
     username = models.CharField(max_length=50)
     body = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['created_on']
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.body, self.username)
+
+
+
 class usertoken(RandomIDModel):
     username = models.CharField(max_length=50)
     email = models.CharField(max_length=100, unique=True)

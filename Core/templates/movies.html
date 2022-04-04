@@ -65,6 +65,16 @@
                  </select>
             </div>
             <div class="col">
+                <label style="color: white" for="rating">Rating</label>
+                <select name="rating" class="form-control">
+{#                    <option value={{ rating }}>{% if rating == "high" %} Highest to Lowest#}
+{#                                    {% else %} Lowest to Highest{%  endif %}</option>#}
+                    <option value="high" {% if rating == "high" %} selected {% endif %}>Highest to Lowest</option>
+                    <option value="low" {% if rating == "low" %} selected {% endif %}>Lowest to Highest</option>
+
+                 </select>
+            </div>
+            <div class="col">
             </div>
         </div>
     </div>

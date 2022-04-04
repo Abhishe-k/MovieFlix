@@ -7,7 +7,7 @@ from movie.forms import OrderForm, ImageForm, CommentForm
 from .forms import SignUpForm, SignInForm
 from movie.models import movie, actor, order, topmovie, profile, Comment
 from movie.forms import OrderForm, ImageForm
-from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm
+from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm, ContactForm
 from movie.models import movie, actor, order, topmovie, profile, usertoken
 from django.core import serializers
 # Create your views here.
@@ -19,6 +19,8 @@ from django.core.mail import EmailMessage
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import imdb
+
+from .models import Contact
 
 movie_list_global = movie.objects.all().order_by("-year")
 actor_list_global = actor.objects.all()
@@ -220,6 +222,11 @@ def movies(request):
     else:
         year = ""
 
+    if "rating" in request.POST.keys():
+        rating = request.POST['rating']
+    else:
+        rating = 'high'
+
     paginator = Paginator(allmovies, 18)
     page = request.GET.get('page')
     print(page)
@@ -244,7 +251,11 @@ def movies(request):
             query.add(Q(year=year), Q.AND)
 
         print("List: ", allmovies)
-        all_movies = allmovies.filter(query)
+        if rating != "high":
+            all_movies = allmovies.filter(query).order_by('rating')
+        else:
+            all_movies = allmovies.filter(query).order_by('-rating')
+
         allmovies = all_movies
         print(allmovies)
 
@@ -264,7 +275,8 @@ def movies(request):
             'genres': genre_list,
             'years': year_list,
             'genre': genre,
-            'year': year
+            'year': year,
+            'rating': rating,
         }
 
     if 'username' in request.session.keys():
@@ -295,7 +307,8 @@ def movieDetail(request, movie_id):
     # items = Item.objects.filter(type_id=type_no)
     actors = allactors.filter(movieId=temp)
     # items = Item.objects.filter(type_id=type_no)
-    temp.runtime = temp.runtime.split("'")[1]
+    if temp.runtime != '':
+        temp.runtime = temp.runtime.split("'")[1]
     print(temp.runtime)
     temp2 = None
     for m in actors:
@@ -320,12 +333,13 @@ def movieDetail(request, movie_id):
         comment_form = CommentForm()
 
     actorList=[]
-    if temp2.actor1 != '':
-        actorList.append(ia.get_person(temp2.actor1)['name'])
-    if temp2.actor2 != '':
-        actorList.append(ia.get_person(temp2.actor2)['name'])
-    if temp2.actor3 != '':
-        actorList.append(ia.get_person(temp2.actor3)['name'])
+    if temp2:
+        if temp2.actor1 != '':
+            actorList.append(ia.get_person(temp2.actor1)['name'])
+        if temp2.actor2 != '':
+            actorList.append(ia.get_person(temp2.actor2)['name'])
+        if temp2.actor3 != '':
+            actorList.append(ia.get_person(temp2.actor3)['name'])
     print(actorList)
     if 'username' in request.session.keys():
         context = {
@@ -346,6 +360,7 @@ def movieDetail(request, movie_id):
     return render(request, 'movie.html', {'movieData':temp,
                                           'movie_detail': movie_by_id,
                                           'comments': comments,
+                                          'actorList':actorList
                                           })
     # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
     # response.write(para)
@@ -358,7 +373,7 @@ def profile_user(request):
         return redirect('/signin')
     form = OrderForm()
     user = User.objects.get(username=request.session['username'])
-    orderList = order.objects.all()
+    orderList = order.objects.filter(username=request.session['username'])
     # usr_img = profile.objects.get(username=request.session['username'])
     context = {'user': user, 'username': request.session['username'],'orderForm':form,'orderList':orderList}
 
@@ -431,3 +446,20 @@ def order_movie(request):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
         print(email_from + str(recipient_list) + message + user_email)
         return redirect('/profile')
+
+def contact_us(request):
+    f = ContactForm()
+    context = {
+        'form':f
+    }
+    if request.method == 'POST':
+        f = ContactForm(request.POST)
+        if f.is_valid():
+            print(f)
+            obj = Contact(name=f.cleaned_data['name'], email=f.cleaned_data['email'], message=f.cleaned_data['message'])
+            obj.save()
+        context={
+            'form':ContactForm()
+        }
+
+    return render(request, 'contact_us.html',context)
