@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
 {##}
 {#<h4>Username: {{ user.username }}</h4>#}
@@ -34,10 +35,10 @@
               <br>
             <div class="d-flex justify-content-center mb-2">
               {% if form %}
-                    <form method="post" action="upload/" enctype="multipart/form-data">
+                    <form method="post" action="upload/" enctype="multipart/form-data" style="color:white">
                   {% csrf_token %}
                    {{ form.as_p }}
-                  <button type="submit">Upload</button>
+                  <button type="submit" class="btn btn-primary">Upload</button>
                 </form>
                 {% endif %}
             </div>
@@ -75,6 +76,7 @@
                 </div>
               </div>
             </div>
+          {% if orderList %}
           <table class="table" style="color: white">
   <thead>
     <tr>
@@ -100,6 +102,10 @@
   {% endfor %}
   </tbody>
 </table>
+          {% else %}
+              <br><br>
+              <p style="color:white"> No orders!</p>
+          {% endif %}
           </div>
         </div>
       </div>

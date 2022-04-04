@@ -13,7 +13,10 @@ admin.site.register(order)
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('username', 'body', 'created_on', 'active')
-    actions = ['approve_comments']
+    actions = ['disable_comments', 'approve_comments']
+
+    def disable_comments(self, request, queryset):
+        queryset.update(active=False)
 
     def approve_comments(self, request, queryset):
         queryset.update(active=True)
