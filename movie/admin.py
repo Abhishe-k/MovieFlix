@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import actor, movie, topmovie, profile, order, Comment
-from .models import actor, movie, topmovie, profile, order, usertoken
+from .models import actor, movie, topmovie, profile, order, usertoken, userlikes
 
 # Register your models here.
 
@@ -9,7 +9,7 @@ admin.site.register(movie)
 admin.site.register(topmovie)
 admin.site.register(profile)
 admin.site.register(order)
-
+admin.site.register(userlikes)
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('username', 'body', 'created_on', 'active')

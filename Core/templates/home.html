@@ -80,7 +80,7 @@
             <div class="card h-100" style="background-color: black">
               <img class="image" onclick="window.location.href = '/movie/{{ m.topId.id }}';" src={{ m.topId.imageUrl }} height="100%" class="card-img-top" alt="...">
                 <div class="middle">
-                    {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}
+                    {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }} <br> <a href="/movies/like/{{ m.id  }}">Like</a>
                     <br>
                      <p class="card-text">
 

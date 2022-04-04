@@ -3,7 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .data import Data
 from .forms import ImageForm, OrderForm, CommentForm
-from .models import profile, order, movie
+from .models import profile, order, movie, userlikes
+from django.contrib.auth.models import User
 
 
 def movies(request):
@@ -14,7 +15,6 @@ def movies(request):
 
 
 def top_250(request):
-
     d = Data()
     top250 = d.get_movies(True)
 
@@ -73,9 +73,21 @@ def comment_details(request):
         comment_form = CommentForm()
 
     return render(request, 'comment.html', {'movie_detail': movie_detail,
-                                      'comments': comments,
-                                      'new_comment': new_comment,
-                                      'comment_form': comment_form})
+                                            'comments': comments,
+                                            'new_comment': new_comment,
+                                            'comment_form': comment_form})
 
-def likes(request):
-    likes = request.POST['']
+
+def likes(request, m_id):
+    # try:
+    user = User.objects.get(username=request.session['username'])
+    print(user.email)
+    movie_title = movie.objects.get(id=format(m_id, '07'))
+    print(movie_title)
+    userlike = userlikes.objects.filter(username=request.session['username'], movie_id=m_id)
+    if not userlike:
+        obj = userlikes(movie_id=movie_title, movie=movie_title.title, username=user.username, likes=True)
+        obj.save()
+        return HttpResponse("Liked")
+    return HttpResponse("Already Liked")
+

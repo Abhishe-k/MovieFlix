@@ -72,6 +72,8 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.body, self.username)
+
+
 class usertoken(RandomIDModel):
     username = models.CharField(max_length=50)
     email = models.CharField(max_length=100, unique=True)
@@ -79,3 +81,13 @@ class usertoken(RandomIDModel):
 
     def __str__(self):
         return "1)Email:" + self.email + " 2)Username: " + self.username
+
+
+class userlikes(models.Model):
+    movie_id = models.ForeignKey(movie, on_delete=models.CASCADE)
+    username = models.CharField(max_length=50)
+    likes = models.BooleanField(default=False)
+    movie = models.CharField(max_length=100)
+
+    def __str__(self):
+        return 'User {} likes Movie {} : {}'.format(self.username, self.movie_id,self.likes)

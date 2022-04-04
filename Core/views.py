@@ -365,7 +365,7 @@ def profile_user(request):
     try:
         usr_img = profile.objects.get(username=request.session['username'])
         context['img'] = usr_img.image
-    except:
+    except():
         context['form'] = ImageForm()
 
     return render(request, 'profile.html', context)
