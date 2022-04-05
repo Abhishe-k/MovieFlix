@@ -4,13 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
 from movie.forms import OrderForm, ImageForm, CommentForm
-from .forms import SignUpForm, SignInForm
-from movie.models import movie, actor, order, topmovie, profile, Comment, userlikes
-from movie.forms import OrderForm, ImageForm
+from movie.models import movie, actor, order, topmovie, profile, usertoken, userlikes, Comment
 from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm, ContactForm
-from movie.models import movie, actor, order, topmovie, profile, usertoken
-from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm
-from movie.models import movie, actor, order, topmovie, profile, usertoken, userlikes
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
@@ -22,7 +17,7 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import imdb
 
-from .models import Contact
+from movie.models import Contact
 
 movie_list_global = movie.objects.all().order_by("-year")
 actor_list_global = actor.objects.all()
@@ -35,6 +30,11 @@ def registerUser(request):
             print('form validation portion')
             username = form.cleaned_data.get('username')
             email = form.cleaned_data.get('email')
+
+            temp_user = User.objects.filter(email=email)
+            if temp_user:
+                return HttpResponse("User with " + email + "already exist." + "<a href='/signup'>" + "Sign Up" + "</a>")
+
             first_name = form.cleaned_data.get('first_name')
             last_name = form.cleaned_data.get('last_name')
             password = form.cleaned_data.get('password')
@@ -81,7 +81,11 @@ def loginUser(request):
 def forgot_password(request):
     if request.POST:
         user_email = request.POST['email']
-        user  = User.objects.get(email=user_email)
+
+        try:
+            user = User.objects.get(email=user_email)
+        except:
+            return HttpResponse('User with ' + user_email + ' does not exist. Please enter valid email.' + "<a href='/forgotpassword'>" + " Forgot password?" + "</a>")
         if user:
             try:
                 user_token =  usertoken.objects.get(email=user.email)
@@ -143,7 +147,7 @@ def change_password(request,token):
     print(request.POST)
     valid = False
 
-    user_token = usertoken.objects.filter(id=token)
+    user_token = usertoken.objects.filter(id=token)[0]
     if user_token:
         valid = True
         if request.method == 'POST':
@@ -344,6 +348,10 @@ def movieDetail(request, movie_id):
             actorList.append(ia.get_person(temp2.actor3)['name'])
     print(actorList)
     if 'username' in request.session.keys():
+        u = User.objects.filter(username=request.session['username'])[0]
+        isLiked = userlikes.objects.filter(movie_id=movie_by_id.id, username=u.username)
+
+    if 'username' in request.session.keys():
         context = {
             'username': request.session['username'],
             'movieData':temp,
@@ -351,7 +359,8 @@ def movieDetail(request, movie_id):
             'movie_detail': movie_by_id,
             'comments': comments,
             'new_comment': new_comment,
-            'comment_form': comment_form
+            'comment_form': comment_form,
+            'isLiked': isLiked
         }
 
         if request.POST:
@@ -359,6 +368,7 @@ def movieDetail(request, movie_id):
         else:
             return render(request, 'movie.html', context)
     response = HttpResponse()
+
     return render(request, 'movie.html', {'movieData':temp,
                                           'movie_detail': movie_by_id,
                                           'comments': comments,
@@ -451,20 +461,21 @@ def order_movie(request):
 
 
 def likes(request, m_id):
-    # try:
-    if request.session['username']:
+    if 'username' in request.session.keys():
         user = User.objects.get(username=request.session['username'])
         print(user.email)
         movie_title = movie.objects.get(id=format(m_id, '07'))
         print(movie_title)
-        userlike = userlikes.objects.filter(username=request.session['username'], movie_id=m_id)
+        userlike = userlikes.objects.filter(username=request.session['username'], movie=movie_title.title)
+        print(userlike)
         if not userlike:
             obj = userlikes(movie_id=movie_title, movie=movie_title.title, username=user.username, likes=True)
             obj.save()
-            return redirect('/movie/'+str(m_id))
+            # return redirect('/movie/'+str(m_id))
+        else:
+            userlike.delete()
         return redirect('/movie/' + str(m_id))
-    return redirect('/movie/' + str(m_id))
-
+    return redirect('/signin/')
 
 
 def contact_us(request):
@@ -472,6 +483,9 @@ def contact_us(request):
     context = {
         'form':f
     }
+    if 'username' in request.session.keys():
+        context['username'] = request.session['username']
+
     if request.method == 'POST':
         f = ContactForm(request.POST)
         if f.is_valid():
@@ -479,7 +493,7 @@ def contact_us(request):
             obj = Contact(name=f.cleaned_data['name'], email=f.cleaned_data['email'], message=f.cleaned_data['message'])
             obj.save()
         context={
-            'form':ContactForm()
+            'form': ContactForm(),
         }
 
     return render(request, 'contact_us.html',context)

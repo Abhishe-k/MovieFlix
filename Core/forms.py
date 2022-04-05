@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from Core.models import Contact
+from movie.models import Contact
 
 
 class SignUpForm(forms.ModelForm):
