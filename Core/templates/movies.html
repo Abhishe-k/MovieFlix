@@ -64,6 +64,7 @@
 
                  </select>
             </div>
+
             <div class="col">
                 <label style="color: white" for="rating">Rating</label>
                 <select name="rating" class="form-control">
@@ -86,7 +87,7 @@
             <div class="card h-100" style="background-color: black">
               <img class="image" onclick="window.location.href = '/movie/{{ m.id }}';" src={{ m.imageUrl }} height="100%" class="card-img-top" alt="...">
                 <div class="middle">
-                    {{ m.genre1}} <br> {{ m.genre2 }} <br> {{ m.rating }}
+                    {{ m.genre1}} <br> {{ m.genre2 }} <br> {{ m.rating }} <br>
                     <br>
                      <p class="card-text">
 

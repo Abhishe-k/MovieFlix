@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .views import registerUser, loginUser, home, logout, movies, movieDetail, profile_user, order_movie
 
+
 urlpatterns = [
     path('', home, name='home'),
     path('home/', home, name='home'),
@@ -15,5 +16,7 @@ urlpatterns = [
     path('profile/upload/', views.image_upload, name='upload'),
     path('forgotpassword/', views.forgot_password, name='forgotpassword'),
     path('resetpassword/<int:token>', views.change_password, name='resetpassword'),
+    path('movies/like/<int:m_id>/', views.likes, name='likes'),
+
 
 ]

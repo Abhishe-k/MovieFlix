@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
 <main>
 <div class="container">
     <div class="row" style="margin: 2% 2% 0% 2%">
@@ -16,6 +15,21 @@
             {% if movieData.genre2 %}
             <button class="btn btn-primary btn-rounded btn-sm" >{{ movieData.genre2 }}</button>
             {% endif %}
+
+{#            <form action="" method="post">#}
+{#                {% csrf_token %}#}
+{#                <input id="heart" type="checkbox" onchange="callView(this)"/>#}
+{#                <label for="heart">❤</label>#}
+{##}
+{#            </form>#}
+            {% if isLiked %}
+                <span style="color: red;font-size: larger"><i class="bi bi-heart-fill"></i></span>
+            {% else %}
+{#                    <a href="/movies/like/{{ movieData.id |floatformat:"0" }}">#}
+                  &nbsp; <span style="color: red;font-size: larger" onclick="window.location.href = '/movies/like/{{ movieData.id |floatformat:"0" }}';" style="color: blue"><i class="bi bi-heart"></i></span>
+                </a>
+            {% endif %}
+
             <br><br>
             <span class="badge rounded-pill bg-warning text-dark">{{ movieData.rating }}</span>
 

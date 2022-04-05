@@ -5,10 +5,10 @@ from django.contrib.auth.models import User
 
 from movie.forms import OrderForm, ImageForm, CommentForm
 from .forms import SignUpForm, SignInForm
-from movie.models import movie, actor, order, topmovie, profile, Comment
+from movie.models import movie, actor, order, topmovie, profile, Comment, userlikes
 from movie.forms import OrderForm, ImageForm
 from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm
-from movie.models import movie, actor, order, topmovie, profile, usertoken
+from movie.models import movie, actor, order, topmovie, profile, usertoken, userlikes
 from django.core import serializers
 # Create your views here.
 from django.contrib.auth.models import User
@@ -339,6 +339,10 @@ def movieDetail(request, movie_id):
         if temp2.actor3 != '':
             actorList.append(ia.get_person(temp2.actor3)['name'])
     print(actorList)
+
+    u = User.objects.filter(username=request.session['username'])[0]
+    isLiked = userlikes.objects.filter(movie_id=movie_by_id.id, username=u.username)
+    print(isLiked)
     if 'username' in request.session.keys():
         context = {
             'username': request.session['username'],
@@ -347,7 +351,8 @@ def movieDetail(request, movie_id):
             'movie_detail': movie_by_id,
             'comments': comments,
             'new_comment': new_comment,
-            'comment_form': comment_form
+            'comment_form': comment_form,
+            'isLiked':isLiked
         }
 
         if request.POST:
@@ -377,7 +382,7 @@ def profile_user(request):
     try:
         usr_img = profile.objects.get(username=request.session['username'])
         context['img'] = usr_img.image
-    except:
+    except():
         context['form'] = ImageForm()
 
     return render(request, 'profile.html', context)
@@ -443,3 +448,20 @@ def order_movie(request):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
         print(email_from + str(recipient_list) + message + user_email)
         return redirect('/profile')
+
+
+def likes(request, m_id):
+    # try:
+    if request.session['username']:
+        user = User.objects.get(username=request.session['username'])
+        print(user.email)
+        movie_title = movie.objects.get(id=format(m_id, '07'))
+        print(movie_title)
+        userlike = userlikes.objects.filter(username=request.session['username'], movie_id=m_id)
+        if not userlike:
+            obj = userlikes(movie_id=movie_title, movie=movie_title.title, username=user.username, likes=True)
+            obj.save()
+            return redirect('/movie/'+str(m_id))
+        return redirect('/movie/' + str(m_id))
+    return redirect('/movie/' + str(m_id))
+

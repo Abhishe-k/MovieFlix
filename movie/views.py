@@ -3,7 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .data import Data
 from .forms import ImageForm, OrderForm, CommentForm
-from .models import profile, order, movie
+from .models import profile, order, movie, userlikes
+from django.contrib.auth.models import User
 
 
 def movies(request):
@@ -14,7 +15,6 @@ def movies(request):
 
 
 def top_250(request):
-
     d = Data()
     top250 = d.get_movies(True)
 
@@ -73,9 +73,8 @@ def comment_details(request):
         comment_form = CommentForm()
 
     return render(request, 'comment.html', {'movie_detail': movie_detail,
-                                      'comments': comments,
-                                      'new_comment': new_comment,
-                                      'comment_form': comment_form})
+                                            'comments': comments,
+                                            'new_comment': new_comment,
+                                            'comment_form': comment_form})
 
-def likes(request):
-    likes = request.POST['']
+

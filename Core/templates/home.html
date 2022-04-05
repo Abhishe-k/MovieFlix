@@ -79,8 +79,8 @@
            <div class="col imageCard">
             <div class="card h-100" style="background-color: black">
               <img class="image" onclick="window.location.href = '/movie/{{ m.topId.id }}';" src={{ m.topId.imageUrl }} height="100%" class="card-img-top" alt="...">
-                <div class="middle">
-                    {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }}
+                <div class="middle" onclick="window.location.href = '/movie/{{ m.topId.id }}';">
+                    {{ m.topId.genre1}} <br> {{ m.topId.genre2 }} <br> {{ m.topId.rating }} <br>
                     <br>
                      <p class="card-text">
 
