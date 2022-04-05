@@ -1,2 +1,2 @@
 # MovieFlix
-# Move to the development Branch for the project code.
+# Project code is present on the "development" branch
