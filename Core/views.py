@@ -7,6 +7,8 @@ from movie.forms import OrderForm, ImageForm, CommentForm
 from .forms import SignUpForm, SignInForm
 from movie.models import movie, actor, order, topmovie, profile, Comment, userlikes
 from movie.forms import OrderForm, ImageForm
+from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm, ContactForm
+from movie.models import movie, actor, order, topmovie, profile, usertoken
 from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm
 from movie.models import movie, actor, order, topmovie, profile, usertoken, userlikes
 from django.core import serializers
@@ -19,6 +21,8 @@ from django.core.mail import EmailMessage
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import imdb
+
+from .models import Contact
 
 movie_list_global = movie.objects.all().order_by("-year")
 actor_list_global = actor.objects.all()
@@ -339,10 +343,6 @@ def movieDetail(request, movie_id):
         if temp2.actor3 != '':
             actorList.append(ia.get_person(temp2.actor3)['name'])
     print(actorList)
-
-    u = User.objects.filter(username=request.session['username'])[0]
-    isLiked = userlikes.objects.filter(movie_id=movie_by_id.id, username=u.username)
-    print(isLiked)
     if 'username' in request.session.keys():
         context = {
             'username': request.session['username'],
@@ -351,8 +351,7 @@ def movieDetail(request, movie_id):
             'movie_detail': movie_by_id,
             'comments': comments,
             'new_comment': new_comment,
-            'comment_form': comment_form,
-            'isLiked':isLiked
+            'comment_form': comment_form
         }
 
         if request.POST:
@@ -363,6 +362,7 @@ def movieDetail(request, movie_id):
     return render(request, 'movie.html', {'movieData':temp,
                                           'movie_detail': movie_by_id,
                                           'comments': comments,
+                                          'actorList':actorList
                                           })
     # para = '<p>' + str(type_by_id.id) + ': ' + str(type_by_id.name) + '</p>'
     # response.write(para)
@@ -382,7 +382,7 @@ def profile_user(request):
     try:
         usr_img = profile.objects.get(username=request.session['username'])
         context['img'] = usr_img.image
-    except():
+    except:
         context['form'] = ImageForm()
 
     return render(request, 'profile.html', context)
@@ -465,3 +465,21 @@ def likes(request, m_id):
         return redirect('/movie/' + str(m_id))
     return redirect('/movie/' + str(m_id))
 
+
+
+def contact_us(request):
+    f = ContactForm()
+    context = {
+        'form':f
+    }
+    if request.method == 'POST':
+        f = ContactForm(request.POST)
+        if f.is_valid():
+            print(f)
+            obj = Contact(name=f.cleaned_data['name'], email=f.cleaned_data['email'], message=f.cleaned_data['message'])
+            obj.save()
+        context={
+            'form':ContactForm()
+        }
+
+    return render(request, 'contact_us.html',context)

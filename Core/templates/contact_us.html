@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section style="background-color: black; min-height: 70vh">
+<div class="row align-items-md-stretch">
+      <div class="col-md-12">
+        <div class="h-100 p-5 text-black text-center bg-warning rounded-3" style="min-height: 30vh">
+          <h2>We'd love to hear from you !</h2>
+          <p>Whatever your questions are about features - we are ready to answer all your questions.</p>
+        </div>
+      </div>
+</div>
+  <div class="container" style="padding: 2%">
+    <div class="row">
+      <div class="col-7">
+{#              <img height="80%" width="100%" src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fs3.amazonaws.com%2Fappforest_uf%2Ff1634309260569x667618322294532000%2Fnew_il.webp?w=768&h=624&auto=compress&dpr=1.25&fit=max" alt="">#}
+          <img height="100%" width="100%" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.iSE4sBXNxG9-tn-B6Iyk5wHaDJ%26pid%3DApi&f=1" alt="">
+      </div>
+      <div class="col-5" >
+          <div style="padding: 40px; height:100%;box-shadow: 0 3px 6px 0 rgb(23 25 51 / 8%), 0 16px 32px 0 rgb(23 25 51 / 10%);max-width: 420px;background-color: white">
+            <h3>Get in touch</h3>
+              <form action="" method="POST">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <button class="btn btn-primary" type="submit">Submit</button>
+              </form>
+
+          </div>
+      </div>
+      </div>
+  </div>
+</section>
+{% endblock %}
