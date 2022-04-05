@@ -11,7 +11,6 @@ urlpatterns = [
     path('upload', views.image_upload, name='upload'),
     path('view', views.view_image, name='view'),
     path('<slug:slug>/', views.comment_details, name='comment_details'),
-    path('like/<int:m_id>/', views.likes, name='likes'),
 ]
 
 if settings.DEBUG:
