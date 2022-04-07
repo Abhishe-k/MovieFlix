@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
 <main>
 <div class="container">
@@ -8,7 +9,42 @@
             <img src={{ movieData.imageUrl }} width="50%" height="auto" alt={{ movieData.title }}>
         </div>
         <div class="col-6" >
-            <h2 style="color: white">{{ movieData.title }}</h2>
+        <div class="row">
+            <div class="col-8">
+                <h2 style="color: white">{{ movieData.title }}</h2>
+            </div>
+            <script>
+                function order(){
+                    console.log({{movieData.id}})
+                    fetch("/config/")
+                    .then((result) => { return result.json(); })
+                    .then((data) => {
+                      // Initialize Stripe.js
+                      const stripe = Stripe(data.publicKey);
+
+                      // new
+                      // Event handler
+
+                        // Get Checkout Session ID
+                        fetch("/create-checkout-session/"+ {{movieData.id}})
+                        .then((result) => { return result.json(); })
+                        .then((data) => {
+                          console.log(data);
+                          // Redirect to Stripe Checkout
+                          return stripe.redirectToCheckout({sessionId: data.sessionId})
+                        })
+                        .then((res) => {
+                          console.log(res);
+                        });
+                      });
+
+                }
+            </script>
+            <div class="col-4">
+                <button class="btn btn-warning" onclick="order()">Order Now</button>
+            </div>
+        </div>
+
             {% if movieData.genre1 %}
             <button class="btn btn-primary btn-rounded btn-sm" >{{ movieData.genre1 }}</button>
             {% endif %}
@@ -41,6 +77,9 @@
             <h6 style="color: white">Runtime &nbsp; <span style="color: blue">{{ movieData.runtime }} <span>Mins</span></span></h6>
 
             <h6 style="color: white">Release Year &nbsp; <span style="color: blue">{{ movieData.year }}</span></h6>
+            <br>
+
+
 {#            <p style="font-size: 10px;color: white">{{ movieData.plot }}</p>#}
          <div class="show-hide-text">
           <a  id="show-more" class="show-less" href="#show-less">Show less</a>

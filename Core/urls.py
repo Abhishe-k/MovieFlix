@@ -19,6 +19,10 @@ urlpatterns = [
     path('forgotpassword/', views.forgot_password, name='forgotpassword'),
     path('resetpassword/<int:token>', views.change_password, name='resetpassword'),
     path('movies/like/<int:m_id>/', views.likes, name='likes'),
+    path('config/', views.stripe_config),
+    path('create-checkout-session/<id>', views.create_checkout_session),
+    path('success/', views.SuccessView.as_view()), # new
+    path('cancelled/', views.CancelledView.as_view()), # new
 
 
 ]
