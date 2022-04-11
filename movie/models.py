@@ -17,6 +17,7 @@ class movie(models.Model):
     votes = models.IntegerField(null=True)
     runtime = models.CharField(max_length=3, null=True)
     year = models.IntegerField(null=True)
+    price = models.PositiveIntegerField(blank=True,null=True)
 
     def __str__(self):
         return self.title
@@ -99,3 +100,10 @@ class Contact(models.Model):
     email = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
         return self.name
+
+class MovieOrder(models.Model):
+    username = models.CharField(max_length=10)
+    movie_Id = models.ForeignKey(movie, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.movie_Id.title

@@ -1,11 +1,14 @@
+import random
+
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from movie.forms import OrderForm, ImageForm, CommentForm
-from movie.models import movie, actor, order, topmovie, profile, usertoken, userlikes, Comment
+from movie.models import movie, actor, order, topmovie, profile, usertoken, userlikes, Comment, MovieOrder
 from .forms import SignUpForm, SignInForm, ResetPasswordForm, ForgotPasswordForm, ContactForm
 from django.core import serializers
 # Create your views here.
@@ -353,7 +356,17 @@ def movieDetail(request, movie_id):
         u = User.objects.filter(username=request.session['username'])[0]
         isLiked = userlikes.objects.filter(movie_id=movie_by_id.id, username=u.username)
 
+
     if 'username' in request.session.keys():
+        isOrdered = False
+        movieOrderList = MovieOrder.objects.filter(username=request.session['username'])
+        for m in movieOrderList:
+            # print(type(movie_id),type(m.movie_Id.id))
+            if str(movie_id) == str(m.movie_Id.id):
+                isOrdered = True
+                # print(m.movie_Id.title)
+                break
+        # print(isOrdered)
         context = {
             'username': request.session['username'],
             'movieData':temp,
@@ -362,7 +375,8 @@ def movieDetail(request, movie_id):
             'comments': comments,
             'new_comment': new_comment,
             'comment_form': comment_form,
-            'isLiked': isLiked
+            'isLiked': isLiked,
+            'isOrdered':isOrdered
         }
 
         if request.POST:
@@ -388,6 +402,11 @@ def profile_user(request):
     form = OrderForm()
     user = User.objects.get(username=request.session['username'])
     orderList = order.objects.filter(username=request.session['username'])
+    # orderList = MovieOrder.objects.filter(username=request.session['username'])
+    # movieOrderList = []
+    # for m in orderList:
+    #     movieOrderList.append(movie.objects.get(id=format(m.movie_Id.id, '07')))
+    # print(movieOrderList)
     # usr_img = profile.objects.get(username=request.session['username'])
     context = {'user': user, 'username': request.session['username'],'orderForm':form,'orderList':orderList}
 
@@ -530,18 +549,64 @@ def create_checkout_session(request,id):
                     {
                         'name': movieData.title,
                         'quantity': 1,
-                        'currency': 'usd',
-                        'amount': '2000',
+                        'currency': 'cad',
+                        'amount': str(movieData.price*100),
 
                     }
                 ]
             )
-            return JsonResponse({'sessionId': checkout_session['id']})
+            request.session['id'] = id
+            return JsonResponse({'sessionId': checkout_session.id})
         except Exception as e:
             return JsonResponse({'error': str(e)})
-class SuccessView(TemplateView):
-    template_name = 'success.html'
+@csrf_exempt
+def webhook(request):
+    print("Webhook")
+    endpoint_secret = settings.ENDPOINT_SECRET
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        print(session)
+
+
+    return HttpResponse(status=200)
+def success(request):
+    print("success")
+    movie_order = MovieOrder()
+    movie_order.username = request.session['username']
+    movie_order.movie_Id = movie.objects.get(id=request.session['id'])
+    movie_order.save()
+    return render(request,'success.html')
+
+
 
 
 class CancelledView(TemplateView):
     template_name = 'cancelled.html'
+
+def MovieOrderList(request):
+    if 'username' in request.session.keys():
+        movieList = MovieOrder.objects.filter(username=request.session['username'])
+        movieOrderList = []
+        for m in movieList:
+            movieOrderList.append(m.movie_Id)
+        print(movieOrderList)
+        context = {
+            'username': request.session['username'], 'orderList': movieOrderList
+        }
+        return render(request, 'movie_order.html', context)

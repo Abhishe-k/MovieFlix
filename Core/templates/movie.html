@@ -41,7 +41,13 @@
                 }
             </script>
             <div class="col-4">
-                <button class="btn btn-warning" onclick="order()">Order Now</button>
+                {% if isOrdered %}
+
+                    <button class="btn btn-warning" disabled>Ordered</button>
+                    {% else %}
+                    <button class="btn btn-warning" onclick="order()">Order Now</button>
+                {% endif %}
+
             </div>
         </div>
 

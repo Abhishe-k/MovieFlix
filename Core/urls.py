@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
-from .views import registerUser, loginUser, home, logout, movies, movieDetail, profile_user, order_movie, contact_us
-
+from .views import registerUser, loginUser, home, logout, movies, movieDetail, profile_user, order_movie, contact_us, \
+    MovieOrderList
 
 urlpatterns = [
     path('', home, name='home'),
@@ -21,8 +21,10 @@ urlpatterns = [
     path('movies/like/<int:m_id>/', views.likes, name='likes'),
     path('config/', views.stripe_config),
     path('create-checkout-session/<id>', views.create_checkout_session),
-    path('success/', views.SuccessView.as_view()), # new
+    path('success/', views.success), # new
     path('cancelled/', views.CancelledView.as_view()), # new
+    path('movie-orders/', MovieOrderList, name='movie_order'),
+    path('webhooks/stripe/', views.webhook,name='webhook'),
 
 
 ]

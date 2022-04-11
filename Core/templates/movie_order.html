@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section style="background-color: black; min-height: 70vh">
+  <div class="container">
+  {% if orderList %}
+          <table class="table" style="color: white">
+  <thead>
+    <tr>
+        <th style="width:15%;" scope="col"></th>
+          <th style="width:15%;">Movie</th>
+          <th style="width:15%;">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for o in orderList %}
+       <tr onclick="window.location.href = '/movie/{{ o.id }}';">
+          <td ><img width="10%" height="10%" src={{ o.imageUrl }} alt=""></td>
+          <td>{{ o.title }}</td>
+          <td>CAD&nbsp;{{ o.price | floatformat:"2"}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+          {% else %}
+              <br><br>
+              <p style="color:white"> No orders!</p>
+          {% endif %}
+  </div>
+{#<div class="row row-cols-1 row-cols-md-4 g-4" >#}
+{#       {% for m in orderList %}#}
+{#           <div class="col imageCard">#}
+{#            <div class="card h-100" style="background-color: black">#}
+{#              <img class="image" onclick="window.location.href = '/movie/{{ m.id }}';" src={{ m.imageUrl }} height="100%" class="card-img-top" alt="...">#}
+{#                <div class="middle" onclick="window.location.href = '/movie/{{ m.id }}';">#}
+{#                    {{ m.genre1}} <br> {{ m.genre2 }} <br> {{ m.rating }} <br>#}
+{#                    <br>#}
+{#                     <p class="card-text">#}
+{##}
+{#                    </p>#}
+{#                    </div>#}
+{#              <div class="card-body">#}
+{#                <h5 class="card-title" onclick="window.location.href = '/movie/{{ m.id }}';"><p style="color: white;font-size: 14px">{{ m.title }}</p></h5>#}
+{##}
+{##}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
+{#       {% endfor %}#}
+{##}
+{#   </div>#}
+</section>
+{% endblock %}
