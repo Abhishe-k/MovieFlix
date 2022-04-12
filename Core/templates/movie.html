@@ -15,7 +15,8 @@
             </div>
             <script>
                 function order(){
-                    console.log({{movieData.id}})
+                    var id = {{ movieid }}
+                    console.log(id)
                     fetch("/config/")
                     .then((result) => { return result.json(); })
                     .then((data) => {
@@ -26,7 +27,7 @@
                       // Event handler
 
                         // Get Checkout Session ID
-                        fetch("/create-checkout-session/"+ {{movieData.id}})
+                        fetch("/create-checkout-session/"+ {{ movieid }})
                         .then((result) => { return result.json(); })
                         .then((data) => {
                           console.log(data);
@@ -42,8 +43,8 @@
             </script>
             <div class="col-4">
                 {% if isOrdered %}
-
                     <button class="btn btn-warning" disabled>Ordered</button>
+                    <button class="btn btn-warning" onclick="window.location.href=''">Play</button>
                     {% else %}
                     <button class="btn btn-warning" onclick="order()">Order Now</button>
                 {% endif %}

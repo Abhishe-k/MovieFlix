@@ -9,9 +9,9 @@ from django.contrib.auth.models import User
 
 def movies(request):
     d = Data()
-    d.get_movies(False)
-
-    return HttpResponse('Movies are saved to database.')
+    # d.get_movies(False)
+    d.update_price()
+    return HttpResponse('Movies are saved to database and price updated.')
 
 
 def top_250(request):

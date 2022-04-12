@@ -6,7 +6,7 @@
 <section style="background-color: black; min-height: 70vh">
   <div class="container">
   {% if orderList %}
-          <table class="table" style="color: white">
+          <table class="table" style="color: white;">
   <thead>
     <tr>
         <th style="width:15%;" scope="col"></th>
@@ -16,7 +16,7 @@
   </thead>
   <tbody>
   {% for o in orderList %}
-       <tr onclick="window.location.href = '/movie/{{ o.id }}';">
+       <tr id="row" style="cursor:pointer" onclick="window.location.href = '/movie/{{ o.id }}';">
           <td ><img width="10%" height="10%" src={{ o.imageUrl }} alt=""></td>
           <td>{{ o.title }}</td>
           <td>CAD&nbsp;{{ o.price | floatformat:"2"}}</td>

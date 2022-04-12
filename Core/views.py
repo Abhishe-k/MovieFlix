@@ -559,6 +559,8 @@ def create_checkout_session(request,id):
                 ]
             )
             request.session['id'] = id
+            # session_dict['username'] = request.session['username']
+            print('keys', request.session.keys())
             return JsonResponse({'sessionId': checkout_session.id})
         except Exception as e:
             return JsonResponse({'error': str(e)})
@@ -589,8 +591,10 @@ def webhook(request):
 
     return HttpResponse(status=200)
 def success(request):
+    print(request.session.keys())
     print("success")
     movie_order = MovieOrder()
+    # print(request.session['id'], request.session['username'])
     movie_order.username = request.session['username']
     movie_order.movie_Id = movie.objects.get(id=request.session['id'])
     movie_order.save()
@@ -644,7 +648,25 @@ def success(request):
 class CancelledView(TemplateView):
     template_name = 'cancelled.html'
 
+
+# def cart_add(request, id):
+#     cart = Cart(name)
+
 def MovieOrderList(request):
+    print(request.session.keys())
+    # if 'username' in session_dict.keys():
+    #     movieList = MovieOrder.objects.filter(username=session_dict['username'])
+    #     movieOrderList = []
+    #     for m in movieList:
+    #         movieOrderList.append(m.movie_Id)
+    #     print(movieOrderList)
+    #     username = session_dict['username']
+    #     session_dict.clear()
+    #     context = {
+    #         'username': username, 'orderList': movieOrderList
+    #     }
+    #     return render(request, 'movie_order.html', context)
+
     if 'username' in request.session.keys():
         movieList = MovieOrder.objects.filter(username=request.session['username'])
         movieOrderList = []
