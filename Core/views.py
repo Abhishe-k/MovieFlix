@@ -361,15 +361,16 @@ def movieDetail(request, movie_id):
         isOrdered = False
         movieOrderList = MovieOrder.objects.filter(username=request.session['username'])
         for m in movieOrderList:
-            # print(type(movie_id),type(m.movie_Id.id))
-            if str(movie_id) == str(m.movie_Id.id):
+            if str(format(movie_id, '07')) == str(m.movie_Id.id):
                 isOrdered = True
                 # print(m.movie_Id.title)
                 break
         # print(isOrdered)
+        print('id', str(format(movie_id, '07')))
         context = {
             'username': request.session['username'],
             'movieData':temp,
+            'movieid': str(format(movie_id, '07')),
             'actorList':actorList,
             'movie_detail': movie_by_id,
             'comments': comments,
@@ -525,6 +526,8 @@ def stripe_config(request):
         return JsonResponse(stripe_config, safe=False)
 
 def create_checkout_session(request,id):
+    id = str(id).rjust(7, '0')
+    print(id)
     if request.method == 'GET':
         domain_url = 'http://localhost:8000/'
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -591,6 +594,48 @@ def success(request):
     movie_order.username = request.session['username']
     movie_order.movie_Id = movie.objects.get(id=request.session['id'])
     movie_order.save()
+
+    user_email = User.objects.get(username=request.session['username']).email
+    username = request.session['username']
+    subject = 'Thank you for your order'
+    message = ' You have ordered the following movie ' + str(movie_order.movie_Id.title)
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = []
+    recipient_list.append(user_email)
+    htmlmessage = """
+                <html lang="en">
+        <head>
+          <title>Bootstrap Example</title>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+          <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+        </head>
+        <body>
+        <div class="container">
+
+        """ \
+                  + " <center><h2>Thank you for your order " + str(username) + " !</h2></center> " \
+                                                                                 """
+
+                                                                              <div class="card">
+                                                                                <div class="card-body" style="text-align: center">
+                                                                                  <h4 class="card-title"></h4>
+                                                                                  <p class="card-text">Hi, your order for """ + str(movie_order.movie_Id.title) + \
+                                                                                   """ has been placed successfully: <strong>
+                                                                                   </strong> \
+                                                                                                     
+                                 </p>
+                               </div>
+                             </div>
+                           </div>
+                           </body>
+                           </html>
+                                   """
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list, html_message=htmlmessage)
+    print(email_from + str(recipient_list) + message + user_email)
     return render(request,'success.html')
 
 
@@ -610,3 +655,5 @@ def MovieOrderList(request):
             'username': request.session['username'], 'orderList': movieOrderList
         }
         return render(request, 'movie_order.html', context)
+
+    return redirect('/signin')

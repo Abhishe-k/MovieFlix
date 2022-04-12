@@ -10,7 +10,7 @@ urlpatterns = [
     path('updateimage', views.update_image, name='updateimage'),
     path('upload', views.image_upload, name='upload'),
     path('view', views.view_image, name='view'),
-    path('<slug:slug>/', views.comment_details, name='comment_details'),
+    path('/', views.comment_details, name='comment_details'),
 ]
 
 if settings.DEBUG:
